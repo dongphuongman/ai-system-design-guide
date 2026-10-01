@@ -40,6 +40,7 @@ A practical, continuously updated guide to AI system design, RAG architectures, 
 | I want to... | Start here |
 |--------------|------------|
 | **Prepare for interviews** | [Question Bank](00-interview-prep/01-question-bank.md) → [Answer Frameworks](00-interview-prep/02-answer-frameworks.md) |
+| **Practice with a real interviewer** | [Book a 1:1 mock interview or mentorship](https://enginebogie.com/u/om) (also on [Topmate](https://topmate.io/ombharatiya)) |
 | **Learn AI systems fast** | [LLM Internals](01-foundations/01-llm-internals.md) → [RAG Fundamentals](06-retrieval-systems/01-rag-fundamentals.md) |
 | **Build production RAG** | [Chunking](06-retrieval-systems/02-chunking-strategies.md) → [Vector DBs](06-retrieval-systems/04-vector-databases.md) → [Reranking](06-retrieval-systems/06-reranking-strategies.md) → [Production RAG](06-retrieval-systems/14-production-rag-at-scale.md) |
 | **Advanced retrieval** | [Contextual Retrieval](06-retrieval-systems/10-contextual-retrieval.md) → [ColBERT](06-retrieval-systems/11-late-interaction-colbert.md) → [Multi-modal RAG](06-retrieval-systems/12-multimodal-rag.md) |
@@ -243,6 +244,13 @@ This guide gives you **concrete patterns**, **real tradeoffs**, and **production
 
 ➡️ Start with [Interview Prep](00-interview-prep/)
 
+**Want a practice run before the real loop?** Reading strong answers builds knowledge, but the loop tests something else: explaining a design out loud, under a clock, while someone pushes back on your tradeoffs. Om runs 1:1 mock AI system design interviews, answer and resume reviews, and longer-term mentorship for people moving into senior AI roles. Book on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya).
+
+<p align="center">
+  <a href="https://enginebogie.com/u/om"><img src="https://img.shields.io/badge/Book%20a%20mock%20interview%20%E2%86%92-0E7C66?style=for-the-badge&logo=googlecalendar&logoColor=white" alt="Book a mock interview on EngineBogie"></a>
+  <a href="https://topmate.io/ombharatiya"><img src="https://img.shields.io/badge/Mentorship%20on%20Topmate-1F2937?style=for-the-badge&logoColor=white" alt="Book mentorship on Topmate"></a>
+</p>
+
 ---
 
 ## ❓ Frequently Asked Questions
@@ -251,7 +259,7 @@ This guide gives you **concrete patterns**, **real tradeoffs**, and **production
 AI system design is the discipline of architecting production-grade systems built around LLMs, retrieval, agents, and evaluation. It covers model selection, RAG pipelines, agent orchestration, memory, observability, and safety. See [LLM Internals](01-foundations/01-llm-internals.md) and [AI Design Patterns](15-ai-design-patterns/) to get oriented.
 
 ### How do I prepare for an AI engineering interview?
-Start with the [Question Bank](00-interview-prep/01-question-bank.md) (128 questions through August 2026), then practice with [Answer Frameworks](00-interview-prep/02-answer-frameworks.md) and [Whiteboard Exercises](00-interview-prep/04-whiteboard-exercises.md). Most senior interviews test RAG design, agent debugging, multi-tenant isolation, and cost/latency tradeoffs, all covered in the [Case Studies](16-case-studies/).
+Start with the [Question Bank](00-interview-prep/01-question-bank.md) (128 questions through August 2026), then practice with [Answer Frameworks](00-interview-prep/02-answer-frameworks.md) and [Whiteboard Exercises](00-interview-prep/04-whiteboard-exercises.md). Most senior interviews test RAG design, agent debugging, multi-tenant isolation, and cost/latency tradeoffs, all covered in the [Case Studies](16-case-studies/). Before a real loop, do at least one timed mock with someone who will interrupt and push back; you can book one with Om on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya).
 
 ### What is RAG (Retrieval-Augmented Generation)?
 RAG is a pattern where an LLM retrieves relevant context from an external knowledge source (vector DB, search index, graph) before generating an answer, reducing hallucinations and grounding responses in your data. The full pipeline is covered in [RAG Fundamentals](06-retrieval-systems/01-rag-fundamentals.md) and scaled in [Production RAG at Scale](06-retrieval-systems/14-production-rag-at-scale.md).
@@ -312,6 +320,7 @@ If this guide helps you, the easiest way to support it is to follow along where 
 - **GitHub:** [@ombharatiya](https://github.com/ombharatiya) - follow for the repo, star the project, and watch for new releases.
 - **X / Twitter:** [@ombharatiya](https://x.com/ombharatiya) - short takes on model releases, MCP, agents, and interviews.
 - **LinkedIn:** [ombharatiya](https://linkedin.com/in/ombharatiya) - deeper writeups and interview prep tips for senior AI roles.
+- **Mock interviews and mentorship:** [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya) - book a 1:1 mock AI system design loop, a review of your answers, or ongoing mentorship for a move into AI roles.
 
 <p align="center">
   <a href="https://github.com/ombharatiya"><img src="https://img.shields.io/badge/Follow%20on%20GitHub-ombharatiya-181717?style=for-the-badge&logo=github" alt="Follow on GitHub"></a>

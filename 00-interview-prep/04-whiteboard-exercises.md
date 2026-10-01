@@ -1136,6 +1136,10 @@ Cost: extraction pass on session close is the main LLM cost;
 - Leave time for reliability and evaluation
 - Check in with the interviewer on focus areas
 
+### Rehearse With Someone Else Drawing the Clock
+
+Solo practice catches knowledge gaps; it does not catch pacing, rambling, or the habit of defending a choice instead of weighing it. Run at least one exercise end to end with another person playing the interviewer. If you want an experienced interviewer and written feedback, book a 1:1 mock with Om on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya).
+
 ---
 
 *See also: [Question Bank](01-question-bank.md) | [Answer Frameworks](02-answer-frameworks.md) | [Common Pitfalls](03-common-pitfalls.md)*

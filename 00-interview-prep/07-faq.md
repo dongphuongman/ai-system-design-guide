@@ -37,6 +37,10 @@ Python is the default for AI work. TypeScript is the most common second language
 
 Demand is strong and pay tracks senior software engineering, often higher at frontier labs. The risk is that the stack changes fast: a framework that mattered last year may be deprecated today. The skills that compound across releases are evaluation, system design, and grounded debugging. See [Job Market Trends](06-job-market-trends-2026.md).
 
+### Where can I get a mock AI system design interview or mentorship?
+
+Practice with a person, not only with a page. A mock interview surfaces the problems self-study hides: running out of time before evaluation, not stating tradeoffs, and freezing when the interviewer changes a constraint. Om, who maintains this guide, runs 1:1 mock AI system design interviews, answer and resume reviews, and ongoing mentorship for engineers moving into senior AI roles. Book on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya). Peers work too: trade mocks with someone preparing for a similar loop and use the [Answer Frameworks](02-answer-frameworks.md) as the scoring rubric.
+
 ---
 
 ## RAG
