@@ -33,15 +33,15 @@ Document parsing is no longer a two-way choice between classic OCR engines and f
 | Model | Released | Notes |
 |-------|----------|-------|
 | DeepSeek-OCR 2 | January 27, 2026 | Apache 2.0 |
-| PaddleOCR-VL | 1.5 on January 29, 2026 | Jina's comparison puts version 1.6 at 96.34 on OmniDocBench v1.6 |
-| Chandra OCR 2 | March 18, 2026 | 85.8 on olmOCR-Bench |
-| Surya OCR 2 | May 27, 2026 | |
+| PaddleOCR-VL | 1.5 on January 29, 2026 | Jina's comparison puts version 1.6 at 96.34 on OmniDocBench v1.6; Apache 2.0 |
+| Chandra OCR 2 | March 18, 2026 | 85.8 on olmOCR-Bench; code Apache 2.0, but weights under Datalab's modified OpenRAIL-M: free for research, personal use and startups under $2M funding or revenue, not for use that competes with Datalab's API; otherwise a paid license |
+| Surya OCR 2 | May 27, 2026 | Code Apache 2.0; weights under a modified OpenRAIL-M: free for research, personal use and startups under $5M funding or revenue; otherwise a paid license |
 | NVIDIA Nemotron Parse 2.0 | August 3, 2026 | Under 1B parameters; layout classes, bounding boxes, reading order, chart-to-table; OpenMDW-1.1 |
 | Cohere Parse (`parse-v5.0`) | August 27, 2026 | Closed weights; 2.3B-parameter VLM, API at $1.50 per 1,000 pages; Markdown with HTML tables, or ordered blocks with bounding boxes |
 | jina-ocr-v1 | September 14, 2026 | Built on DeepSeek-OCR (3.4B total, ~570M active MoE); 91.14 on OmniDocBench v1.6, 83.4 on olmOCR-Bench; **CC BY-NC 4.0, so not for commercial use without a license** |
-| MinerU 4.0 | September 16, 2026 | Toolkit with quality tiers and an agent-oriented CLI (see below) |
+| MinerU 4.0 | September 16, 2026 | Toolkit with quality tiers and an agent-oriented CLI (see below); MinerU Open Source License (Apache 2.0 plus terms): commercial use allowed, a separate license above 100M monthly active users or $20M monthly revenue, and online services must credit MinerU |
 
-Check the license before the benchmark. A parser you cannot ship is not a candidate.
+Check the license before the benchmark. A parser you cannot ship is not a candidate, and "open weights" covers everything from Apache 2.0 to non-commercial to revenue-capped terms that a growing company can outgrow.
 
 ---
 

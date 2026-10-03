@@ -477,10 +477,10 @@ def sliding_window_rerank(
 
 ## SLM Distillation
 
-To solve the latency problem of LLM-based reranking, we now use **Distilled Small Language Models (SLMs)**.
+To cut the latency of LLM-based reranking, distill the LLM's judgments into a **small cross-encoder (SLM)**.
 
 - **Process**: Take a frontier model, have it rerank 1 million pairs, and use those labels to "distill" a tiny 0.1B parameter model. Check the provider's terms on training models with its outputs before you do this with a commercial API.
-- **Result**: You get 95% of the reranking quality of a giant model with the latency of a standard CPU lookup (< 10ms).
+- **Result**: The student runs at cross-encoder latency (100-200ms for 50 candidates in this chapter's budgets, versus 1-3s for an LLM pass) and keeps much of the teacher's ranking quality on in-domain queries. How much is corpus-specific, and the gap widens out of domain, so compare NDCG@10 against the teacher on your golden set before retiring the LLM path.
 - **Production pattern:** Use cross-encoder normally, LLM for fallback on low-confidence reranking scores.
 
 ---

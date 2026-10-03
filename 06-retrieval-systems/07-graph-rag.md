@@ -5,7 +5,7 @@ GraphRAG is the combination of **Knowledge Graphs (KG)** and **Retrieval-Augment
 ## Table of Contents
 
 - [When GraphRAG Actually Wins (and When It Doesn't)](#when-graphrag-actually-wins-and-when-it-doesnt)
-- [Graph as Reranker Pattern (May 2026)](#graph-as-reranker-pattern-may-2026)
+- [Graph as Reranker Pattern](#graph-as-reranker-pattern)
 - [The Limitations of Vector RAG](#the-limitations-of-vector-rag)
 - [GraphRAG Architecture (Extract-Build-Query)](#graphrag-architecture)
 - [Community Summarization (Microsoft Pattern)](#community-summarization)
@@ -65,9 +65,9 @@ The operational cost of a separate graph store is real enough that a leading age
 
 ---
 
-## Graph as Reranker Pattern (May 2026)
+## Graph as Reranker Pattern
 
-The dominant production pattern in 2026 is not full GraphRAG. It is graph-as-reranker, which delivers most of the multi-hop benefit at a fraction of the construction cost. The intuition is that you do not need a graph index over the entire corpus; you need a graph that covers the entities that show up in the top-k vector results, expanded just enough to find connected evidence.
+Full GraphRAG is rarely the right first build. The cheaper hybrid is graph-as-reranker, which aims for most of the multi-hop benefit at a fraction of the construction cost. The intuition is that you do not need a graph index over the entire corpus; you need a graph that covers the entities that show up in the top-k vector results, expanded just enough to find connected evidence.
 
 The flow is:
 

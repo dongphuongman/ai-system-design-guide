@@ -39,7 +39,7 @@ Two requests with the same token counts on the same model can differ in price by
 |-----------|--------------|------------------|
 | **Long-context cliff** | The **whole request** moves to a higher rate once the prompt crosses a threshold, not just the excess | OpenAI above 272K input: 2x input and cache, 1.5x output (Batch and Flex too, and Fast on the GPT-6 and GPT-5.6 families). xAI Grok 4.6/4.7 at or above 200K: all tokens doubled. Gemini 3.1 Pro Preview above 200K. Anthropic Claude 4.6 and later: flat to 1M |
 | **Cache write / read** | Premium to write a prefix, discount to reread it within the TTL | OpenAI GPT-5.6 and later: write 1.25x, read 0.1x (0.05x on GPT-6.1 Sol), fixed 30-minute TTL. Anthropic: write 1.25x (5 min) or 2x (1 h); read 0.1x, 0.05x on Opus 5.5, 0.025x on Fable 5.1. Gemini: read 0.1x plus hourly storage |
-| **Service tier** | Pay less to wait, more to go first or faster | Batch and Flex 0.5x everywhere. OpenAI Fast (renamed from Priority on July 30) 2x, 2.5x on GPT-5.5; Ultrafast 6x (GA on GPT-6 Astra, preview on GPT-5.6 Sol). Gemini Priority about 1.8x. Bedrock Priority 1.75x. Anthropic fast mode on Opus (2x); Anthropic no longer sells Priority Tier |
+| **Service tier** | Pay less to wait, more to go first or faster | Batch 0.5x at OpenAI, Anthropic and the Gemini API; Flex 0.5x where offered (OpenAI, Gemini API, Bedrock for most models; Anthropic has no Flex tier, and GPT-6 Astra on Bedrock supports neither Flex nor Priority). OpenAI Fast (renamed from Priority on July 30) 2x, 2.5x on GPT-5.5; Ultrafast 6x (GA on GPT-6 Astra, preview on GPT-5.6 Sol). Gemini Priority about 1.8x. Bedrock Priority 1.75x. Anthropic fast mode on Opus (2x); Anthropic no longer sells Priority Tier |
 | **Data residency** | Region-pinned processing costs about 10% more | Anthropic `inference_geo: "us"` 1.1x on all token types (Claude 4.6+). OpenAI residency endpoints for models released from March 5, 2026. Bedrock and Google Cloud regional Claude. Bedrock regional GPT-6 Astra ($11/$55). Mistral EU inference |
 | **Promotional window** | Temporary rate with an end date, or only a floor date | Gemini 3.6/3.7/3.8 Flash at half price through December 31, 2026. GPT-5.6 Sol $4/$20, guaranteed only "at least through November 21, 2026". Gemini 4 Argon's announced intro price has no end date |
 | **Time of day** | Off-peak discount | DeepSeek off-peak is 50% of peak; peak is 01:00-04:00 and 06:00-10:00 UTC on weekdays only, excluding Chinese public holidays |
@@ -113,7 +113,7 @@ Committed (1-year): $2.00 / 1M input tokens (20% savings)
 | **GPT-5.4-mini** | $0.75 | $4.50 | Cached $0.075. |
 | **GPT-5.4-nano** | $0.20 | $1.25 | Cached $0.02. Shuts down April 1, 2027 (to GPT-6 Luna). |
 | **GPT-4.1** | $2.00 | $8.00 | Cached $0.50. Legacy. |
-| **GPT-4o** | $2.50 | $10.00 | Cached $1.25. Retired from ChatGPT February 13, 2026. On Azure Foundry, gpt-4o 2024-05-13 Standard deployments auto-upgrade to gpt-5.6-sol on December 9, 2026. |
+| **GPT-4o** | $2.50 | $10.00 | Cached $1.25. Retired from ChatGPT February 13, 2026. The original `gpt-4o-2024-05-13` snapshot shuts down on the OpenAI API October 23, 2026 (substitute: gpt-5.6-sol). On Azure Foundry, gpt-4o 2024-05-13 Standard deployments auto-upgrade to gpt-5.6-sol on December 9, 2026. |
 | **GPT-4o-mini** | $0.15 | $0.60 | Cached $0.075. Legacy. |
 
 #### Anthropic (Claude 5.x Generation)
@@ -140,12 +140,12 @@ Committed (1-year): $2.00 / 1M input tokens (20% savings)
 > - **Fast mode** runs on Opus 5.5 ($8 / $40, research preview on the Claude API only) and on Opus 5 and Opus 4.8 ($10 / $50). It stacks with caching multipliers but is not available on the Batch API or Claude Platform on AWS.
 > - **Residency:** `inference_geo: "us"` costs 1.1x on input, output, cache writes and cache reads for Claude 4.6 and later; older models return 400 if the parameter is set.
 > - **Refusals:** from September 24, 2026, pre-output refusals with `stop_details.category` of `bio`, `frontier_llm` or `reasoning_extraction` are billed; other categories are not. Break refusal spend out by category on cost dashboards.
-> - **Breaking changes that touch cost code:** Fable 5.1, Opus 5.5 and Sonnet 5.5 return 400 on `tool_choice` of `any` or `tool`, and thinking blocks are bound to the producing model and conversation. Bedrock and Google Cloud set their own retirement schedules for Claude; Anthropic's dates apply to the Claude API, Claude Platform on AWS and Foundry.
+> - **Breaking changes that touch cost code:** Fable 5.1, Opus 5.5 and Sonnet 5.5 return 400 on `tool_choice` of `any` or `tool`, and thinking blocks are bound to the producing model and conversation. Bedrock and Google Cloud set their own retirement schedules for Claude. Anthropic says its dates apply to the Claude API, Claude Platform on AWS and Foundry, but Microsoft's Foundry retirement schedule currently lists earlier Foundry dates for claude-haiku-4-5 (November 15) and claude-opus-4-5 (November 24) than Anthropic's notice policy implies; plan for the earlier date on Foundry and confirm with both vendors.
 
 #### Google (Gemini 3.x and 4)
 | Model | Input / 1M | Output / 1M | Context | Notes |
 |-------|------------|-------------|---------|-------|
-| **Gemini 3.8 Flash** | $0.75 intro ($1.50 from Jan 1, 2027) | $3.75 intro ($7.50 from Jan 1, 2027) | 1M (65K out) | GA September 2, 2026. Output price includes thinking tokens. Batch and Flex $0.375 / $1.875; Priority $1.35 / $6.75 intro ($2.70 / $13.50 from January 1); cache read $0.075 plus $0.50 per 1M tokens per hour of storage. Thinking levels low, medium, high. Coverage notes it spends more reasoning tokens per task, which offsets part of the low rate. |
+| **Gemini 3.8 Flash** | $0.75 intro ($1.50 from Jan 1, 2027) | $3.75 intro ($7.50 from Jan 1, 2027) | 1M (65K out) | GA September 2, 2026. Output price includes thinking tokens. Batch and Flex $0.375 / $1.875 intro ($0.75 / $3.75 from January 1); Priority $1.35 / $6.75 intro ($2.70 / $13.50 from January 1); cache read $0.075 intro ($0.15 from January 1) plus storage $0.50 per 1M tokens per hour intro ($1.00 from January 1). Thinking levels low, medium, high. Coverage notes it spends more reasoning tokens per task, which offsets part of the low rate. |
 | **Gemini 3.7 Flash / 3.6 Flash** | $0.75 intro | $3.75 intro | 1M | Same introductory price and January 1, 2027 doubling. Superseded by 3.8 Flash. |
 | **Gemini 4 Argon** | $2.00 intro ($4.00 after) | $10.00 intro ($20.00 after) | 1M output (per Google) | **Announced September 30, 2026, not generally available.** Rolling out first to cyber defenders in the Fairwind Program; paid API customers and Google AI Ultra come next with no date. No model ID in the Gemini API as of October 1. Cached input 95% off. The introductory period has no published end date. |
 | **Gemini 3.1 Pro Preview** | $2.00 | $12.00 | 1M | Above 200K: $4.00 / $18.00. The only Pro-tier model in the Gemini API; there is no Gemini 3.5 Pro. |
@@ -177,7 +177,7 @@ Google Search grounding: 5,000 free requests per month shared across Gemini 3.x 
 | **Xiaomi MiMo-V2.6-Flash** | $0.14 | $0.28 | 1M | 309B / 15B active, MIT. OpenRouter price; the same numbers DeepSeek V4 Flash charged before August. |
 | **Z.ai GLM-5.3** | $1.40 | $4.40 | 1M | Cached $0.26. Weights released August 28, 2026 under MIT plus a Z.ai security-review clause for Model-as-a-Service operators above US$10B revenue over 12 months. Also GA on Mistral La Plateforme (September 28); GLM 5.2 retires there October 31. |
 | **Z.ai GLM-5.3-Flash** | $0.15 | $0.50 | 1M | August 26, 2026, plain MIT, 320B / 18B active. Cached $0.03. |
-| **Moonshot Kimi K3** | $3.00 | $15.00 | - | Cached $0.30. Custom license: a separate agreement is required for MaaS operators above US$20M revenue over 12 months. Index v4.3.2 score 44 (the widely quoted 57.1 is from an older, non-comparable index version). |
+| **Moonshot Kimi K3** | $3.00 | $15.00 | 1M | Cached $0.30. Custom license: a separate agreement is required for MaaS operators above US$20M revenue over 12 months. Index v4.3.2 score 44 (the widely quoted 57.1 is from an older, non-comparable index version). |
 | **Qwen3.8-Max / -0902** | $2.00 | $6.00 | 1M | Alibaba Model Studio international price for both `qwen3.8-max` and the September 2 `-0902` snapshot, which is API-only. The open 2.4T / 95B-active checkpoint is still the August 12 build and has a MaaS and assistant-product gate above US$50M revenue over 12 months: self-hosters fall behind the API model within weeks. |
 | **Qwen3.8-Flash** (hosted Flash-Next) | $0.15 | $0.47 | 1M | Qwen Cloud. Open weights (Qwen3.8-Flash-Next, a Qwen4 architecture preview) use Qwen Community License 1.0, which requires a separate license for any MaaS or coding/office-assistant business regardless of revenue. |
 | **Tencent Hy4 preview** | $0.834 | $2.501 | 1M | August 28, 2026, Apache 2.0, 770B / 49B active. Tencent TokenHub list (cache hit $0.042); third-party OpenRouter hosts match. |
@@ -224,7 +224,7 @@ For architecture tradeoffs between these options, see [Realtime Voice Agents](..
 | **voyage-context-4, voyage-code-4** | $0.12 | voyage-code-4 reports +27.54% over voyage-code-3 (vendor-reported). |
 | **text-embedding-3-large** | $0.13 | 3072 dims, 8,192-token input. Unchanged. |
 | **text-embedding-3-small** | $0.02 | 1536 dims. Carried over. |
-| **gemini-embedding-2** | check latest | Multimodal, stable since April 2026. A $0.20 figure appears only in secondary listings. |
+| **gemini-embedding-2** | $0.20 (text; Batch $0.10) | Multimodal, stable since April 2026; image $0.45, audio $6.50, video $12.00 per 1M (Google pricing page). |
 | **Cohere Embed 4** | $0.10 | Previous Cohere generation; Matryoshka dims 256 / 512 / 1024 / 1536. Carried over. |
 
 Rerankers: Voyage rerank-3 at $0.05 and rerank-3-lite at $0.02 per 1M tokens (September 30, 2026, 32K context).
@@ -236,9 +236,9 @@ Rerankers: Voyage rerank-3 at $0.05 and rerank-3-lite at $0.02 per 1M tokens (Se
 
 Lifecycle is now tracked per **(model, platform)** pair: the same model can retire months apart on the vendor API, Bedrock, Google Cloud and Foundry. Minimum notice differs too: OpenAI gives 6 months for GA models, 3 months for specialized variants and as little as 2 weeks for previews (`gpt-5.4-cyber` got 20 days); Anthropic gives 60 days; Bedrock models launched from September 7, 2026 carry a 6-month or 45-day Legacy period, and in Legacy, existing customers can lose access after 15 days of inactivity; Foundry gives Fireworks per-token models 15 days.
 
-**Executed between August 15 and October 1, 2026:** Groq free and developer Llama 3.3 70B and 3.1 8B (August 16); Anthropic Workbench and experimental prompt tools (August 17); OpenAI and Azure OpenAI Assistants API (August 26, replaced by Responses plus Conversations); Mistral Medium 3.1 (August 31, to 3.5); `gpt-5.4-cyber` (October 1, on 20 days' notice).
+**Executed between August 15 and October 1, 2026:** Groq free and developer Llama 3.3 70B and 3.1 8B (August 16); Anthropic Workbench and experimental prompt tools (August 17); OpenAI and Azure OpenAI Assistants API (August 26, replaced by Responses plus Conversations); Mistral Medium 3.1 (August 31, to 3.5); OpenAI's Sora 2 models and the Videos API (September 24, no one-to-one replacement); `gpt-5.4-cyber` (October 1, on 20 days' notice).
 
-**Scheduled in the same window (execution not independently confirmed):** Bedrock Claude 3 Haiku (September 10); Bedrock Nova Premier and Nova Sonic v1 (September 14); Bedrock Nova Canvas and Nova Reel (September 30); OpenAI's Sora 2 and Videos API (September 24, no replacement); `gpt-3.5-turbo-instruct`, `babbage-002` and `davinci-002` (September 28); Mistral OCR 4.0 (to OCR 4.1 at the same price) and Leanstral 1.5 on the API (September 30); `gemini-2.5-flash-image` (October 2). Treat any of these still in your code as broken until you have tested them.
+**Scheduled in the same window (execution not independently confirmed):** Bedrock Claude 3 Haiku (September 10); Bedrock Nova Premier and Nova Sonic v1 (September 14); Bedrock Nova Canvas and Nova Reel (September 30); `gpt-3.5-turbo-instruct`, `babbage-002` and `davinci-002` (September 28); Mistral OCR 4.0 (to OCR 4.1 at the same price) and Leanstral 1.5 on the API (September 30); `gemini-2.5-flash-image` (October 2). Treat any of these still in your code as broken until you have tested them.
 
 | Date | Kind | Platform | What changes | Move to |
 |------|------|----------|--------------|---------|
@@ -250,6 +250,7 @@ Lifecycle is now tracked per **(model, platform)** pair: the same model can reti
 | Oct 15, 2026 | Retirement | Foundry | `gpt-4o-transcribe`, `gpt-4o-mini-transcribe` (2025-03-20) | `gpt-transcribe` |
 | Oct 15, 2026 | Floor only | Claude API | Claude Haiku 4.5 retirement floor; no notice issued, so not before about December | Haiku 5.5 when released |
 | Oct 20, 2026 | Retirement | Google Cloud | `gemini-2.5-pro`, `-flash`, `-flash-lite` | Gemini 3.8 Flash, 3.5 Flash-Lite |
+| Oct 23, 2026 | Retirement | OpenAI | Legacy snapshots (announced April 22): `gpt-4o-2024-05-13`, `gpt-4-turbo`, `gpt-4-0613`, `gpt-4-1106-preview`, `gpt-3.5-turbo-0125`, `gpt-4.1-nano`, `o1`, `o1-pro`, `o3-mini`, `o4-mini`, `gpt-image-1`. The bare `gpt-4` and `gpt-3.5-turbo` aliases go too, as do fine-tunes of GPT-3.5 Turbo, GPT-4, GPT-4.1-nano, o4-mini, `babbage-002` and `davinci-002` | gpt-5.6-sol / terra / luna (o1-pro via `reasoning.mode: "pro"`); `gpt-image-2.5-sunburst` or `-flare` |
 | Oct 31, 2026 | Retirement | OpenAI | Evals platform goes read-only | Promptfoo (OpenAI-owned, MIT) |
 | Oct 31, 2026 | Retirement | Mistral | Z.ai GLM 5.2 | GLM 5.3 |
 | Nov 2, 2026 | Retirement | xAI | `grok-imagine-image-quality` | `grok-imagine-image-2.0` |
@@ -574,7 +575,7 @@ Keep OpenAI prompts at or under 272K and xAI prompts under 200K, or route long p
 | GPT-6.1 Sol | $2.00 | $2.50 | $0.10 (0.05x) | Fixed 30 min | 0.26 |
 | GPT-6 Sol | $2.00 | $2.50 | $0.20 (0.1x) | Fixed 30 min | 0.28 |
 | GPT-6 Astra | $10.00 | $12.50 | $1.00 (0.1x) | Fixed 30 min | 0.28 |
-| Gemini 3.8 Flash | $0.75 intro | - | $0.075 + $0.50 per 1M tokens per hour of storage | Explicit caches billed per hour stored | Depends on storage time |
+| Gemini 3.8 Flash | $0.75 intro | - | $0.075 intro ($0.15 from Jan 1, 2027) + $0.50 per 1M tokens per hour of storage intro ($1.00 from Jan 1, 2027) | Explicit caches billed per hour stored | Depends on storage time |
 
 A break-even below 1 means **one reuse inside the TTL pays for the write**. Anthropic's 1-hour write needs at least two rereads.
 
@@ -826,7 +827,7 @@ Per-token list prices are the least stable input in the model. I would check eig
 5. **Residency.** Region-pinned processing is about 1.1x at Anthropic, OpenAI, Bedrock, Google Cloud and Mistral. I apply it only to tenants that need it.
 6. **Tokens per task, not tokens per call.** Models differ several-fold in tokens per task (Artificial Analysis measured GPT-6 Astra using about a third of GPT-5.6 Sol's tokens per coding task, and Step 5 Preview about twice the median output). Thinking tokens bill as output.
 7. **Non-token meters.** Per-minute voice billing, managed-agent session hours, sandbox minutes, and billed refusals in some Anthropic safety categories.
-8. **Forced migrations.** Retirements move traffic to new models with new prices and defaults (Sonnet 4.5 on November 30, the GPT-5 and o3 snapshots on December 11, the audio stack in early 2027), and auto-upgrades such as Foundry's gpt-4o to gpt-5.6-sol change cost with no code change.
+8. **Forced migrations.** Retirements move traffic to new models with new prices and defaults (the legacy GPT-4, GPT-3.5, o1 and o4-mini snapshots on October 23, Sonnet 4.5 on November 30, the GPT-5 and o3 snapshots on December 11, the audio stack in early 2027), and auto-upgrades such as Foundry's gpt-4o to gpt-5.6-sol change cost with no code change.
 
 The deliverable is a model with a price schedule per (model, platform) and a scenario for each date in the calendar, not a single blended rate.
 

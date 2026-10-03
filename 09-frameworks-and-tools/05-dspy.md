@@ -126,12 +126,11 @@ MIPROv2 searches over instructions and demos for a fixed pipeline, and it needs 
 ---
 
 ## References
-- Khattab et al. "DSPy: Compiling Declarative Language Model Calls" (2024/2025)
-- Stanford NLP. "The MIPROv2 Technical Report" (2025)
-- Agrawal et al. "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning" (arXiv 2507.19457, 2025)
+- Khattab et al. "DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines" (arXiv 2310.03714, Oct 2023): https://arxiv.org/abs/2310.03714
+- Opsahl-Ong et al. "Optimizing Instructions and Demonstrations for Multi-Stage Language Model Programs" (arXiv 2406.11695, Jun 2024; the MIPRO paper): https://arxiv.org/abs/2406.11695
+- Agrawal et al. "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning" (arXiv 2507.19457, Jul 2025): https://arxiv.org/abs/2507.19457
 - DSPy 3.4.0 release notes (Sep 25, 2026): https://github.com/stanfordnlp/dspy/releases
 - DSPy. "Output Refinement: BestOfN and Refine": https://dspy.ai/tutorials/output_refinement/best-of-n-and-refine/
-- Databricks. "Productionizing Programmed Prompts" (2025)
 
 ---
 

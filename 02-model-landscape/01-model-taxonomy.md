@@ -89,10 +89,10 @@ Anthropic's only Haiku is still Haiku 4.5. Claude Haiku 5.5 was announced for "t
 | Cache / Batch | Cache write $2.50 (5 min) or $4.00 (1 hr); cache read $0.20; Batch $1 / $5 |
 | Thinking | Adaptive thinking on by default; the lowest setting is `between_tools` (accepted at `high` effort or below), and `thinking: {type: "disabled"}` returns a 400. Default effort `high` on the API, medium in Claude Code and the Claude apps |
 | Availability | Claude API, Bedrock, Google Cloud, Foundry, Claude Platform on AWS; zero data retention available |
-| Benchmarks | Anthropic-reported, with Opus 5.5 in parentheses: Terminal-Bench 4.0 70.6% (66.4%), CursorBench 4.0 55.5% (57.8%), GDPval-AA v2.1 1844 (1846), OSWorld 2.1 partial 80.1% (81.8%), HLE with tools 64.5% (67.7%). Independent: AA Intelligence Index v4.3.2 56 (max, with fallback) |
+| Benchmarks | Anthropic-reported, with Opus 5.5 in parentheses: Terminal-Bench 4.0 70.6% (66.4%), CursorBench 4.0 55.5% (57.8%), GDPval-AA v2.1 1844 (1846), OSWorld 2.1 partial 80.1% (81.8%), HLE with tools 64.5% (67.7%), FrontierCode 1.1 46.2% at max effort (54.4%); Anthropic notes Sonnet 5.5 scored lower at max than at xhigh on this test. Independent: AA Intelligence Index v4.3.2 56 (max, with fallback) |
 | Released | September 28, 2026 (knowledge cutoff June 2026; retirement not sooner than September 28, 2027) |
 
-**What it is:** If these numbers hold up independently, a $2/$10 model sits within a few points of the flagship on agentic work, which collapses the case for sending most agent traffic to Opus. Anthropic claims 30%+ faster output than Sonnet 5 and up to 30% lower cost per task (vendor-reported). Anthropic's table puts Sonnet 5 at 10.3% on Terminal-Bench 4.0, against 52.3% for Opus 5 in the same table; treat that outlier with caution and do not use it as a baseline.
+**What it is:** If these numbers hold up independently, a $2/$10 model sits within a few points of the flagship on most of Anthropic's own vendor-reported agentic evals (about 8 points behind on FrontierCode 1.1), which collapses the case for sending most agent traffic to Opus. Anthropic claims 30%+ faster output than Sonnet 5 and up to 30% lower cost per task (vendor-reported). Anthropic's Sonnet 5.5 table puts Sonnet 5 at 10.3% on Terminal-Bench 4.0, while its Opus 5.5 table puts Opus 5 at 52.3%; treat the Sonnet 5 figure as an outlier and do not use it as a baseline.
 
 **Breaking changes vs Sonnet 5:** disabling thinking returns a 400 (send `between_tools` instead); forced tool use returns a 400; thinking blocks are bound to the model, the conversation, and the producing account (blocks sent from an unlinked account are dropped and recorded as `organization_binding_mismatch`); `computer_20251124` is rejected on the Claude API and Google Cloud; and non-default `temperature`, `top_p`, and `top_k` still return a 400. Sonnet 5 became a legacy model three months after launch.
 
@@ -113,7 +113,7 @@ Anthropic's only Haiku is still Haiku 4.5. Claude Haiku 5.5 was announced for "t
 
 **What changed:** the cost of staying on the ceiling model for long agent loops. Anthropic says the 75% cache-read cut lowers typical bills about 25% and highly agentic ones up to 45%, and that its newest cyber safeguards produce about 60% fewer false positives than Fable 5's earlier ones (both vendor-reported). Fable 5.1 may now be used to discover vulnerabilities but not to develop exploits. Fable 5 remains available.
 
-**Mythos 5.1 access:** Glasswing participants only, as of October 1. Anthropic says it will also be offered through a Life Sciences Verification Program (first participants enrolled with the US government) and, "in the near future", a Cyber Verification Program for a set of US organizations.
+**Mythos 5.1 access:** Glasswing participants only, as of October 1. Anthropic says it will also be offered through the Life Sciences Verification Program (first participants enrolled with the US government) and, "in the near future", through the existing Cyber Verification Program, which today covers Opus- and Sonnet-class models. For now Anthropic says Mythos 5.1 is available only to a set of US organizations.
 
 **Safeguard fallback is now an API contract.** On Fable 5 a classifier hit handed the request to Opus 4.8 automatically. On Fable 5.1 it is explicit and configurable:
 
@@ -239,7 +239,7 @@ Haiku 4.5 remains Anthropic's fast tier. Its retirement floor is "not sooner tha
 - **Effort-control toggle** in `claude.ai` and Cowork lets users tune reasoning depth per turn.
 - **Expanded Claude Code rate limits**.
 
-**Considerations:** Tokenizer is the same one introduced in Opus 4.7 (up to 35% more tokens than the pre-4.7 tokenizer for the same fixed text). At release, GPT-5.5 held the SWE-Bench Verified leaderboard at 88.7% and led Terminal-Bench 2.1 at 78.2%. GPQA Diamond slipped 0.6 pts versus Opus 4.7. Anthropic's tokenizer change means token counts and bills for the same text are not directly comparable to pre-4.7 models. There was no Claude Sonnet 4.8; the line jumped to **Claude Sonnet 5** on June 30, 2026, which replaced Sonnet 4.6 as the production workhorse. For new work, Opus 5.5 is cheaper ($4/$20) and stronger.
+**Considerations:** Tokenizer is the same one introduced in Opus 4.7: roughly 30% more tokens than the pre-4.7 tokenizer for the same text, per Anthropic's token-counting docs, with the exact increase depending on content (the Opus 4.7 launch post gave a range of 1.0x to 1.35x). At release, GPT-5.5 held the SWE-Bench Verified leaderboard at 88.7% and led Terminal-Bench 2.1 at 78.2%. GPQA Diamond slipped 0.6 pts versus Opus 4.7. Anthropic's tokenizer change means token counts and bills for the same text are not directly comparable to pre-4.7 models. There was no Claude Sonnet 4.8; the line jumped to **Claude Sonnet 5** on June 30, 2026, which replaced Sonnet 4.6 as the production workhorse. For new work, Opus 5.5 is cheaper ($4/$20) and stronger.
 
 > [!NOTE]
 > **Retired August 5, 2026:** `claude-opus-4-1-20250805` was removed from the Claude API, closing out the last $15/$75 per 1M Opus tier. At that point every first-party Opus SKU was $5/$25 ($10/$50 in Fast mode); Opus 5.5 later cut the current Opus to $4/$20. Amazon Bedrock and Google Cloud set their own schedules: on Bedrock, Opus 4.1 moves into higher-priced public extended access on October 8, 2026 and reaches end of life on January 8, 2027. Code pinned to that ID fails on the first-party API while still working on the partner clouds.
@@ -311,7 +311,7 @@ Haiku 4.5 remains Anthropic's fast tier. Its retirement floor is "not sooner tha
 | Reasoning | Efforts `low`, `medium`, `high`, `xhigh`, `max`; no `none`; no custom `temperature`, `top_p`, or logprobs; tool calling requires the Responses API |
 | Availability | Staged rollout from September 3 (Daybreak organizations first), in the API by September 5; Amazon Bedrock GA September 8 (In-Region and Geo inference $11 / $55, 10% over Global); Microsoft Foundry GA |
 | Safety rating | First OpenAI model rated Critical for cybersecurity under its Preparedness Framework; High for biological and chemical capability. OpenAI says covert sandbagging is likely not reliably caught |
-| Benchmarks | Terminal-Bench 4.0 leaderboard 58.18% at max (rank 1, tbench.ai, September 21). ARC-AGI-3 (ARC Prize): 62.7% on the provider-neutral Standard harness (max, $26,098) vs 99.9% on OpenAI's Provider Adapter harness (high, $18,817). AA Intelligence Index v4.3.2: 53 (max) |
+| Benchmarks | Terminal-Bench 4.0 leaderboard 58.18% at max (rank 1, tbench.ai, September 21). ARC-AGI-3 (ARC Prize): 62.7% on the provider-neutral Standard harness (max, $26,098) vs 99.9% on ARC Prize's Provider Adapter harness (high, $18,817), which uses OpenAI's own context-management features. AA Intelligence Index v4.3.2: 53 (max) |
 | Released | September 3, 2026 |
 
 **What it is:** OpenAI's new ceiling model, at the same $10/$50 as Claude Fable 5.1. Three things change cost models. First, speed is a priced axis with three rungs (Standard, Fast at 2x, Ultrafast at 6x), so a latency SLO is a budget decision. Second, the 272K cliff applies to the entire request, so a prompt just over the line costs roughly twice one just under it: prompt-length routing is a cost control. Third, token efficiency: Artificial Analysis measured Astra using about a third of GPT-5.6 Sol's tokens per coding task, so its cost per task sits closer to the mid tier than the list price suggests.
@@ -332,7 +332,7 @@ Haiku 4.5 remains Anthropic's fast tier. Its retirement floor is "not sooner tha
 | Known issue | An image-encoding bug degraded image understanding and computer use until a September 25 fix shipped under the same model IDs; OpenAI told customers to rerun image evals |
 | Released | September 22, 2026 |
 
-**Why it matters:** Luna at $0.10/$0.50 is OpenAI's cheapest model and undercuts DeepSeek V4.1-Flash even off-peak ($0.15/$0.60); only Gemini 2.5 Flash-Lite ($0.10/$0.40, existing users only) and Meta's data-for-discount Muse Spark contributor tier come in lower. With no Terra successor, three-tier OpenAI routing designs collapse to two, or keep GPT-5.6 Terra at $2/$12, which GPT-6 Sol now undercuts on output. The image bug is the operational lesson: a provider-side fix changed behavior under a stable ID, so evals must rerun on vendor changelog events, not only on model-ID changes. OpenAI's Sol post reports GPT-6 Sol at xhigh 60.5% vs Claude Opus 5 at medium 60.3% on its offline OSWorld 2.0 set (vendor-reported).
+**Why it matters:** Luna at $0.10/$0.50 is OpenAI's cheapest current-generation model. The retiring gpt-5-nano ($0.05/$0.40) stays cheaper until it shuts down December 11, and OpenAI names gpt-5.6-luna ($0.20/$1.20) as its replacement, so moving to Luna instead avoids a price rise. Luna undercuts DeepSeek V4.1-Flash even off-peak ($0.15/$0.60). Gemini 2.5 Flash-Lite ($0.10/$0.40, existing users only) and Meta's Muse Spark contributor tier ($0.10/$0.20) are cheaper, and some hosted open models are cheaper on output (MiMo-V2.6-Flash $0.14/$0.28, Qwen3.8-Flash $0.15/$0.47). With no Terra successor, three-tier OpenAI routing designs collapse to two, or keep GPT-5.6 Terra at $2/$12, which GPT-6 Sol now undercuts on output. The image bug is the operational lesson: a provider-side fix changed behavior under a stable ID, so evals must rerun on vendor changelog events, not only on model-ID changes. OpenAI's Sol post reports GPT-6 Sol at xhigh 60.5% vs Claude Opus 5 at medium 60.3% on its offline OSWorld 2.0 set (vendor-reported).
 
 ### GPT-6.1 Sol (OpenAI) - September 2026 NEW
 
@@ -394,7 +394,7 @@ Haiku 4.5 remains Anthropic's fast tier. Its retirement floor is "not sooner tha
 | Attribute | Value |
 |-----------|-------|
 | Variants | Sol (flagship), Terra (balanced), Luna (fast, low cost) |
-| Context Window | 1M tokens (all three); 128K max output; knowledge cutoff February 16, 2026 |
+| Context Window | 1.05M tokens (all three); 128K max output; knowledge cutoff February 16, 2026 |
 | Sol pricing | $5.00 / $30.00 per 1M list; promotional $4 / $20 since August 21, 2026, guaranteed only "at least through November 21, 2026", so budget on list |
 | Terra pricing | $2.00 / $12.00 per 1M (cut 20% from $2.50/$15 on July 30) |
 | Luna pricing | $0.20 / $1.20 per 1M (cut 80% from $1/$6 on July 30) |
@@ -428,7 +428,7 @@ Haiku 4.5 remains Anthropic's fast tier. Its retirement floor is "not sooner tha
 
 | Lab | Program | Gated model(s) | Who gets in |
 |---|---|---|---|
-| Anthropic | Project Glasswing; Life Sciences Verification Program; Cyber Verification Program (announced) | Claude Mythos 5.1 (same weights as Fable 5.1, looser safeguards) | Glasswing partners; life-sciences participants enrolled with the US government; a set of US organizations for cyber "in the near future" |
+| Anthropic | Project Glasswing; Life Sciences Verification Program (first participants enrolled); Cyber Verification Program (exists today for Opus- and Sonnet-class models with reduced cyber safeguards; Mythos-class access announced for "the near future") | Claude Mythos 5.1 (same weights as Fable 5.1, looser safeguards) | Glasswing partners; life-sciences participants enrolled with the US government; CVP members once Mythos-class access is added (Mythos 5.1 is currently limited to a set of US organizations) |
 | OpenAI | Daybreak Blue / Daybreak Red | Blue: general frontier models (Daybreak organizations got GPT-6 Astra first); Red: `gpt-5.6-cyber` | Approved defenders; Red is separately approved |
 | OpenAI | Trusted access | `gpt-rosalind-research` (life sciences; GA September 8 at $5 / $25 per 1M, billed from October 5) | Approved life-sciences organizations |
 | Google | Fairwind Program | Gemini 3.8 Flash Cyber; first access to Gemini 4 Argon, released to them without cyber guardrails | Government authorities, critical infrastructure operators, software maintainers |
@@ -649,7 +649,7 @@ Haiku 4.5 remains Anthropic's fast tier. Its retirement floor is "not sooner tha
 | Claude Sonnet 5.5 | $2 / $10 | $0.20 | 1M, flat pricing | 5 platforms; ZDR | GA September 28 |
 | GPT-6.1 Sol | $2 / $10 ($4 / $15 above 272K) | $0.10 (0.05x) | 1.05M | API, Bedrock | GA September 29 |
 | GPT-6 Sol | $2 / $10 ($4 / $15 above 272K) | $0.20 | 1.05M | API, Bedrock | GA September 22 |
-| GPT-5.6 Terra | $2 / $12 ($4 / $18 above 272K) | $0.20 | 1M | API, Foundry | GA July 9; no GPT-6 successor |
+| GPT-5.6 Terra | $2 / $12 ($4 / $18 above 272K) | $0.20 | 1.05M | API, Foundry | GA July 9; no GPT-6 successor |
 | Grok 4.7 | $2 / $6 ($4 / $12 at 200K+) | $0.50 | 500K | xAI API, Cursor, gateways | GA September 21 |
 | Muse Spark 1.3 | $1.25 / $4.25 | $0.15 | 1M | Meta Model API, Muse Code | GA September 2 |
 | Gemini 3.8 Flash | $0.75 / $3.75 intro ($1.50 / $7.50 from January 1) | $0.075 | 1M in / 65,536 out | Gemini API, Gemini Enterprise | GA September 2 |
@@ -683,7 +683,7 @@ While frontier models lead on benchmarks, many enterprise systems rely on **batt
 | October 14 | Bedrock Claude Sonnet 4; Foundry `gpt-4.1-nano` | Sonnet 5.5; a current small OpenAI model |
 | October 15 | Claude Haiku 4.5 retirement floor on the Claude API (no notice yet, so not before about December); Foundry `gpt-4o-transcribe` and `gpt-4o-mini-transcribe` (2025-03-20) | Haiku 5.5 once released; `gpt-transcribe` or `gpt-live-transcribe` |
 | October 20 | Google Cloud (Vertex) `gemini-2.5-pro`, `-flash`, `-flash-lite` | Gemini 3.8 Flash or 3.5 Flash-Lite |
-| October 23 | OpenAI API legacy snapshots (announced April 22): `gpt-4o-2024-05-13`, `gpt-4-turbo`, `gpt-4-0613`, `gpt-3.5-turbo-0125`, `gpt-4.1-nano`, `o1`, `o1-pro`, `o3-mini`, `o4-mini`, `gpt-image-1` | GPT-5.6 Sol, Terra, or Luna; `gpt-image-2.5-sunburst` or `-flare` for images |
+| October 23 | OpenAI API legacy snapshots (announced April 22): `gpt-4o-2024-05-13`, `gpt-4-turbo`, `gpt-4-0613`, `gpt-3.5-turbo-0125`, `gpt-4.1-nano`, `o1`, `o1-pro`, `o3-mini`, `o4-mini`, `gpt-image-1`, `gpt-4-1106-preview`, the bare `gpt-4` and `gpt-3.5-turbo` aliases, and fine-tunes of GPT-3.5 Turbo, GPT-4, GPT-4.1-nano, o4-mini, babbage-002 and davinci-002 | GPT-5.6 Sol, Terra, or Luna; `gpt-image-2.5-sunburst` or `-flare` for images |
 | October 31 | Mistral La Plateforme GLM 5.2; OpenAI Evals become read-only | GLM 5.3; export eval results before shutdown |
 | November 2 | `grok-imagine-image-quality` | `grok-imagine-image-2.0` |
 | November 15 | Foundry `claude-haiku-4-5` and `codex-mini` | - |
@@ -702,8 +702,8 @@ While frontier models lead on benchmarks, many enterprise systems rely on **batt
 | April 1, 2027 | `gpt-5.1`, `gpt-5.3-codex`, `gpt-5.4-nano` | GPT-6 Sol or GPT-6 Luna |
 
 **Already past (August 15 to October 2):**
-- **Executed:** Groq free and developer tiers' Llama 3.3 70B and Llama 3.1 8B (August 16), Anthropic Workbench (August 17), OpenAI and Azure Assistants API (August 26, to Responses plus Conversations), Mistral Medium 3.1 (August 31, to Medium 3.5), and `gpt-5.4-cyber` (October 1, on 20 days' notice).
-- **Scheduled on vendor lifecycle pages, execution not independently confirmed:** Bedrock Claude 3 Haiku (September 10); Bedrock Amazon Nova Premier and Nova Sonic v1 (September 14) and Nova Canvas and Reel (September 30); OpenAI Sora 2 and the Videos API (September 24, no replacement named); `gpt-3.5-turbo-instruct`, `babbage-002`, and `davinci-002` (September 28); Mistral OCR 4.0 and Leanstral 1.5 on the API (September 30); and `gemini-2.5-flash-image` (October 2).
+- **Executed:** Groq free and developer tiers' Llama 3.3 70B and Llama 3.1 8B (August 16), Anthropic Workbench (August 17), OpenAI and Azure Assistants API (August 26, to Responses plus Conversations), Mistral Medium 3.1 (August 31, to Medium 3.5), OpenAI Sora 2 and the Videos API (September 24, no replacement), and `gpt-5.4-cyber` (October 1, on 20 days' notice).
+- **Scheduled on vendor lifecycle pages, execution not independently confirmed:** Bedrock Claude 3 Haiku (September 10); Bedrock Amazon Nova Premier and Nova Sonic v1 (September 14) and Nova Canvas and Reel (September 30); `gpt-3.5-turbo-instruct`, `babbage-002`, and `davinci-002` (September 28); Mistral OCR 4.0 and Leanstral 1.5 on the API (September 30); and `gemini-2.5-flash-image` (October 2).
 
 ---
 
@@ -792,7 +792,7 @@ For scale, the top closed model on the same index is Claude Opus 5.5 at 58. Step
 | Model | Parameters | License | Notes |
 |-------|------------|---------|-------|
 | **Qwen3.8-Flash-Next** | 125B total / 6B active MoE, plus a 51B N-gram memory and a 4B MTP module | Qwen Community License 1.0 | August 26, 2026. An early preview of the Qwen4 architecture: Gated DeltaNet linear attention in three of every four layers plus Qwen Sparse Attention, and an N-gram lookup table that can live in host RAM rather than HBM. 262K native, 1M with YaRN; text, image, and video in. AA v4.3.2: 40. **License:** any MaaS or AI coding/office-assistant business needs a separate license from Qwen before commercial use, with no revenue floor; internal use is exempt. Hosted as `qwen3.8-flash` on Qwen Cloud at $0.15 / $0.47 per 1M. |
-| **Qwen3.8-Max** | 2.4T total / 95B active MoE | Qwen3.8-Max License (gated) | August 12, 2026; open checkpoint Qwen3.8-2.4T-A95B. 262K context native, extensible to ~1,010,000. Open weights under a bespoke license, not Apache: attribution required above 100M MAU or $20M monthly revenue, and a separate paid license is required for Model-as-a-Service or AI Work Assistant (coding or office) businesses above US$50M aggregate revenue over 12 months. The open checkpoint is text-input-only; the API version is multimodal. AA v4.3: 40. |
+| **Qwen3.8-Max** | 2.4T total / 95B active MoE | Qwen3.8-Max License (gated) | August 12, 2026; open checkpoint Qwen3.8-2.4T-A95B. 262K context native, extensible to ~1,010,000. Open weights under a bespoke license, not Apache: attribution required above 100M MAU or $20M monthly revenue, and a separate license from Qwen is required for Model-as-a-Service or AI Work Assistant (coding or office) businesses above US$50M aggregate revenue over 12 months. The open checkpoint is text-input-only; the API version is multimodal. AA v4.3: 40. |
 | **Qwen3.8-Max-0902** | Same 2.4T / 95B | API only | September 2, 2026 post-training refresh with no weights; US$2 / $6 per 1M on Alibaba Model Studio (international), the same as `qwen3.8-max`. The open checkpoint stays at the August 12 build, so self-hosters fall behind the API model within weeks: "open snapshot, closed refresh". |
 | **Qwen3.8-27B** | 27B dense | Apache 2.0 | August 14, 2026. The more permissive *and* more modality-complete artifact: accepts image and video input where the open Max checkpoint does not. 262K context, extensible to ~1M. Dense rather than MoE, which makes it the practical single-GPU option. AA v4.3.2: 34. Base for Ternary Bonsai 2; Groq moved its Qwen tier to it on September 14. |
 | **Qwen 3.6 Max-Preview** | ~1T MoE | Commercial preview | Released ~April 20-27, 2026. 262K context. Topped six coding benchmarks per Alibaba. |
@@ -859,7 +859,7 @@ Google released no new Gemma model between August 15 and October 1, and Gemma 5 
 | Capabilities | Multimodal reasoning with Instant / Thinking / Contemplating modes |
 | Released | April 8, 2026 |
 
-**Strategic significance:** Meta's first non-open model since the original Llama era. Signals that frontier-quality work may require a closed-development feedback loop. Llama 4 Behemoth release was simultaneously paused through fall 2026 amid capability concerns. The open-vs-closed equilibrium became two-tier: frontier closed models lead, and open weights catch up via distillation, RL, and ecosystem iteration. The lead was commonly put at 6 to 12 months in April; by September NIST CAISI estimated GLM-5.3 at about four months behind the US frontier on cyber, while AA v4.3.2 still shows a 12-point gap (58 vs 46).
+**Strategic significance:** Meta's first non-open model since the original Llama era. Signals that frontier-quality work may require a closed-development feedback loop. Meta paused the Llama 4 Behemoth release at the same time amid capability concerns, and Behemoth has never shipped. The open-vs-closed equilibrium became two-tier: frontier closed models lead, and open weights catch up via distillation, RL, and ecosystem iteration. The lead was commonly put at 6 to 12 months in April; by September NIST CAISI estimated GLM-5.3 at about four months behind the US frontier on cyber, while AA v4.3.2 still shows a 12-point gap (58 vs 46).
 
 **July 2026 update:** **Muse Spark 1.1** shipped July 9 alongside the public preview of the **Meta Model API**, Meta's first self-serve paid API: OpenAI-compatible, $1.25 / $4.25 per 1M, roughly a quarter of rival flagship rates. Vendor-reported benchmarks lead on scaled tool use (MCP Atlas 88.1) and professional tool use (JobBench 54.7). Meta charging for API access completes the pivot away from open-weight Llama; there is no Llama 5, and Behemoth remains shelved.
 
@@ -897,7 +897,7 @@ August was the month open weights stopped meaning one thing, and September made 
 | Model | Released | Size | License posture | What the license actually does |
 |-------|----------|------|-----------------|-------------------------------|
 | **Qwen3.8-Flash-Next** (Alibaba) | Aug 26 | 125B / 6B active | Qwen Community License 1.0 | Any MaaS or AI coding/office-assistant business needs a separate license before commercial use, with no revenue floor; internal use exempt; attribution above 100M MAU or US$20M monthly revenue. Stricter than the flagship's license |
-| **Qwen3.8-Max** (Alibaba) | Aug 12 | 2.4T / 95B active | Bespoke, commercially gated | Free use, modification, and resale, but attribution is required above 100M MAU or $20M monthly revenue, and a separate paid license is required to run a Model-as-a-Service or AI-assistant business above $50M aggregate revenue |
+| **Qwen3.8-Max** (Alibaba) | Aug 12 | 2.4T / 95B active | Bespoke, commercially gated | Free use, modification, and resale, but attribution is required above 100M MAU or $20M monthly revenue, and a separate license from Qwen is required to run a Model-as-a-Service or AI Work Assistant (coding or office productivity) business when aggregate revenue with affiliates exceeds US$50M over any 12 consecutive months |
 | **Kimi K3** (Moonshot) | Jul 27 (weights) | 2.8T / 104B active | Kimi K3 License | Separate agreement for MaaS operators above US$20M revenue over 12 months; attribution above 100M MAU or US$20M monthly revenue; internal use and certified partners exempt |
 | **Mistral Medium 3.5** | Apr 29 | 128B dense | Modified MIT | A blanket revenue cap, not a MaaS trigger: no rights at all above US$20M global monthly revenue |
 | **GLM-5.3** (Z.ai) | Aug 28 (weights) | 744B / 40B active | GLM-5.3 License (MIT plus review) | Security review before commercial use only for MaaS operators above US$10B aggregate revenue; effectively MIT for almost everyone. Weights shipped on the stated date after a two-week safety window |
@@ -1219,7 +1219,7 @@ Both vendors expose reasoning as an effort dial rather than a toggle, but the co
 **Strong answer:**
 I screen in this order, because the first gate eliminates more candidates than benchmarks do:
 
-1. **License triggers**: a hosted coding assistant is exactly what gated licenses target. Qwen3.8-Flash-Next (Qwen Community 1.0) needs a separate license from day one, Kimi K3 needs an agreement once MaaS revenue passes US$20M over 12 months, Mistral Medium 3.5 withdraws all rights above US$20M monthly revenue, and GLM-5.3's security review only bites above US$10B. MiMo-V2.6, GLM-5.3-Flash, DeepSeek V4.1-Flash, Tencent Hy4 preview, and Qwen3.8-27B are MIT or Apache.
+1. **License triggers**: a hosted coding assistant is exactly what gated licenses target. Qwen3.8-Flash-Next (Qwen Community 1.0) needs a separate license from day one, Kimi K3 needs a separate agreement if the company runs any MaaS business and its total revenue (with affiliates) passes US$20M over 12 months, Mistral Medium 3.5 withdraws all rights above US$20M monthly revenue, and GLM-5.3's security review only bites above US$10B. MiMo-V2.6, GLM-5.3-Flash, DeepSeek V4.1-Flash, Tencent Hy4 preview, and Qwen3.8-27B are MIT or Apache.
 2. **Quality on like-for-like scales and on my tasks**: AA v4.3.2 (MiMo-V2.6-Pro 46, GLM-5.3 45, GLM-5.3-Flash 42) and SWE-Bench Pro v2 private (GLM-5.3 211/272, Kimi K3 214/272), then my own eval on real repositories.
 3. **Serving cost by architecture**: KV bytes per token differ by orders of magnitude across these models, DeepSeek V4.1-Flash activates 8B parameters at prefill but 16B at decode, and several checkpoints ship their own speculative-decoding heads. Size from the model card, not a generic formula.
 4. **Supply chain**: mirror the exact weights and LICENSE files, watch for API-only refreshes that leave the open checkpoint behind (Qwen3.8-Max-0902), and treat post-trained derivatives as inheriting their base license.
@@ -1231,7 +1231,7 @@ I screen in this order, because the first gate eliminates more candidates than b
 Six things. Some move a number by a point or two; the harness and index-version effects alone have moved headline numbers by tens of points this year:
 - **Runner**: vendor run or public leaderboard? Fable 5.1 is 55.8% on Terminal-Bench 4.0 in Anthropic's run and 57.88% on the leaderboard.
 - **Effort**: Astra is 58.18% at max and 57.88% at high on the same leaderboard; compare at the effort you will pay for.
-- **Harness**: Astra scores 62.7% on ARC-AGI-3 with ARC Prize's Standard harness and 99.9% with OpenAI's Provider Adapter, same model and test set.
+- **Harness**: Astra scores 62.7% on ARC-AGI-3 with ARC Prize's Standard harness and 99.9% with ARC Prize's Provider Adapter harness (which uses OpenAI's own context-management features), same model and test set.
 - **Fallback state**: Claude scores "with fallback" belong to a router plus several models.
 - **Index version and saturation**: AA v4.3 scores do not compare with earlier versions (Kimi K3 went from 57.1 to 44 by re-baselining alone), and Opus 5 scores 99.4% on the public SWE-Bench Pro split but 81.6% on the private one.
 - **Cost per task**: tokens per task differ by about 3x between models of similar quality.

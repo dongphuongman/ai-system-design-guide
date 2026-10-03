@@ -156,14 +156,13 @@ The key is to **separate the orchestration layer from the model layer**. I use a
 ---
 
 ## References
-- Google Cloud. "Enterprise Generative AI Reference Architecture" (2025)
-- Gartner. "Magic Quadrant for AI Application Frameworks" (2025)
-- Gartner. "Predicts 2026: 40% of Enterprise Apps to Feature AI Agents" (2025)
-- Thoughtworks. "Technology Radar: The Rise of Agentic Frameworks" (Nov 2024/2025)
-- Microsoft. "Agent Framework Overview" (2026)
-- Anthropic. "Claude Agent SDK" (2026)
-- Google. "Agent Development Kit" (2026)
-- OpenAI. "Agents SDK" and "Agents API" (2026)
+- Gartner. "Gartner Predicts 40% of Enterprise Apps Will Feature Task-Specific AI Agents by 2026, Up from Less Than 5% in 2025" (press release, Aug 26, 2025): https://www.gartner.com/en/newsroom/press-releases/2025-08-26-gartner-predicts-40-percent-of-enterprise-apps-will-feature-task-specific-ai-agents-by-2026-up-from-less-than-5-percent-in-2025
+- Thoughtworks. Technology Radar (Vol. 34, Apr 2026): https://www.thoughtworks.com/radar
+- Microsoft. "Agent Framework Overview": https://learn.microsoft.com/en-us/agent-framework/overview/
+- Anthropic. "Agent SDK reference: Python": https://code.claude.com/docs/en/agent-sdk/python
+- Google. "Agent Development Kit": https://google.github.io/adk-docs
+- OpenAI. Agents SDK releases: https://github.com/openai/openai-agents-python/releases
+- OpenAI. "Agents API overview" (beta, Sep 2026): https://developers.openai.com/api/docs/guides/agents-api/overview
 - Vercel. "AI SDK 7" (Jun 2026): https://vercel.com/blog/ai-sdk-7
 - deepset. Haystack 3.0 release notes (Jul 2026): https://github.com/deepset-ai/haystack/releases/tag/v3.0.0
 - Agno 3.0 release notes (Aug 2026): https://github.com/agno-agi/agno/releases/tag/v3.0.0

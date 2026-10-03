@@ -39,7 +39,7 @@ Modern inference engines (vLLM, SGLang, TensorRT-LLM) use **PagedAttention** or 
 This is the **Holy Grail of Latency** for any production LLM stack.
 - **The Problem**: Every time an agent calls an LLM, it sends the same 2,000-token System Prompt + 50 Tool Schemas. This wastes compute.
 - **The Solution**: **Persistent Prefix Caching**. The server keeps the KV cache for the "Static" part of the prompt (the prefix) in memory.
-- **Result**: You only pay full price for (and wait for) the compute on the *new* part of the message. Hosted cache reads now cost about 0.02x to 0.1x of the input price depending on the model.
+- **Result**: You only pay full price for (and wait for) the compute on the *new* part of the message. Hosted cache reads now cost about 0.02x to 0.25x of the input price depending on the model (0.1x on most).
 - **Multi-tenant caution (self-hosted)**: a shared prefix cache is a timing side channel, because a cache hit is measurably faster. vLLM's control is a per-request `cache_salt`, so cache entries are only shared within a tenant; set it wherever prompts contain private data. The salt has to survive every code path: vLLM v0.30.0 fixed GHSA-935w-9g4m-p28p, where tool-continuation turns on one Responses API path dropped `cache_salt` and reopened the cross-tenant oracle, so run v0.30.0 or later.
 
 ---

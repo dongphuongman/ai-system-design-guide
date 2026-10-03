@@ -217,7 +217,7 @@ def euclidean_distance(a, b):
 |-------|------------|-----------|------------|------------------|-------|
 | OpenAI text-embedding-3-large | 3072 (Matryoshka) | 8,192 | Text | $0.13 | OpenAI has shipped no newer embedding model |
 | OpenAI text-embedding-3-small | 1536 (Matryoshka) | 8,192 | Text | $0.02 | Cheap baseline |
-| Google gemini-embedding-2 | 128-3,072 (768 / 1,536 / 3,072 recommended) | 8,192 text tokens; up to 6 images, 120 s video, audio, 6-page PDFs | Multimodal, interleaved | $0.20 (secondary listing) | Stable since April 2026; replaces text-embedding-004 (shut down) and text-only gemini-embedding-001 (shuts down May 14, 2028) |
+| Google gemini-embedding-2 | 128-3,072 (768 / 1,536 / 3,072 recommended) | 8,192 text tokens; up to 6 images, 120 s video, audio, 6-page PDFs | Multimodal, interleaved | $0.20 text (Google pricing page) | Stable since April 2026; replaces text-embedding-004 (shut down) and text-only gemini-embedding-001 (shuts down May 14, 2028) |
 | Cohere embed-v5.0-pro / -fast | 256-2,048 (Matryoshka) | 128K | Text, image, fused text+image | $0.12 / $0.08 text; $0.40 image | September 30, 2026; Pro and Fast share one embedding space |
 | Voyage voyage-4-large / voyage-4 / voyage-4-lite | 1024 default (256-2,048) | 32K | Text | $0.12 / $0.06 / $0.02 | January 2026; the family shares one embedding space |
 | Voyage voyage-code-4 | 1024 default (256-2,048) | 32K | Code | $0.12 | August 13, 2026; trained on natural-language queries mined from pull requests, for agent-style code search |
@@ -362,7 +362,7 @@ To handle billions of vectors, **Binary** and **Scalar (Int8)** quantization are
 | 4-bit rotated (RaBitQ, TurboQuant, RQ) | 0.5 byte/dim | 8x | Small with rescoring (vendor claims) | Qdrant Turbo4 (opt-in), Weaviate 4-bit RQ (preview), LanceDB RaBitQ |
 | **Binary** | **1 bit/dim** | **32x** | ~5-10% | Model outputs (Cohere, Voyage), most vector DBs |
 
-**Why rotation helps:** A random or Hadamard rotation spreads each vector's energy evenly across dimensions, so a uniform per-dimension quantizer stops wasting bits on a few outlier dimensions. That is what makes 1 to 4 bits per dimension usable. As of October 2026 these modes are opt-in or preview, not defaults: Qdrant added Hadamard-rotated TurboQuant in 1.18 and an opt-in 4-bit Turbo4 storage type in 1.19, Weaviate previewed 4-bit Rotational Quantization in 1.39 (7.84x compression), Elasticsearch 9.5 added a 1-bit OSQ scorer to DiskBBQ, and LanceDB reports multi-bit RaBitQ at 96% recall without a refine step (vendor claim).
+**Why rotation helps:** A random or Hadamard rotation spreads each vector's energy evenly across dimensions, so a uniform per-dimension quantizer stops wasting bits on a few outlier dimensions. That is what makes 1 to 4 bits per dimension usable. As of October 2026 these modes are opt-in or preview, not defaults: Qdrant added Hadamard-rotated TurboQuant in 1.18 and an opt-in 4-bit Turbo4 storage type in 1.19, Weaviate previewed 4-bit Rotational Quantization in 1.39 (7.84x compression), and LanceDB reports multi-bit RaBitQ at 96% recall without a refine step (vendor claim). Elasticsearch is the exception: BBQ (about 1 bit per dimension) has been the default for float `dense_vector` fields of 384+ dims since 9.1, and DiskBBQ (`bbq_disk`) is the default from 9.4 where the license includes it; 9.5 added a symmetric 1-bit OSQ scorer.
 
 **Binary Quantization Pattern** (applies to any low-bit scheme):
 1. Retrieve top 1000 using Binary embeddings (extreme speed).
@@ -559,7 +559,7 @@ Considerations:
 Practical approach:
 1. Start with the model's recommended dimensions.
 2. If using Matryoshka models (like text-embedding-3), experiment with lower dimensions on your task.
-3. Benchmark quality at different dimensions: often 256-512 is 95% of full quality.
+3. Benchmark quality at each dimension on your own queries. OpenAI's published figures set a floor: text-embedding-3-large cut to 256-d still beats full-size ada-002 (61.0 MTEB average) against 64.6 at 3,072-d, so it keeps more than 94% of the full score on that benchmark. A narrow domain can lose more.
 4. For two-stage retrieval: use low dimensions for first stage, full dimensions for reranking.
 
 For most applications, 768-1024 dimensions provide good balance. The exception is very high-precision requirements where 2048-4096 may help.

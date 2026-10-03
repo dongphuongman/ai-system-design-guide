@@ -3458,7 +3458,7 @@ Start today. Your future self will thank you.
 | **Comet Opik** | LLM tracing & evaluation | Apache 2.0 | [GitHub](https://github.com/comet-ml/opik) · [Site](https://www.comet.com/site/products/opik/) |
 | **judgy** | Statistical bias correction | Open | [GitHub](https://github.com/ai-evals-course/judgy) |
 | **Braintrust** | Experimentation & logging | Partial | [Docs](https://www.braintrust.dev/docs) |
-| **Galileo** | Hallucination detection | Proprietary | [Site](https://www.galileo.ai/) |
+| **Galileo** (now Splunk Agent Observability, Cisco) | Hallucination detection | Proprietary | [Docs](https://docs.galileo.ai/) · [Splunk](https://www.splunk.com/en_us/products/agent-observability.html) |
 | **Maxim** | Agentic system evaluation | Proprietary | [Site](https://www.getmaxim.ai/) |
 
 ### Strategy Comparison Matrix
@@ -3472,7 +3472,7 @@ Start today. Your future self will thank you.
 | **Maxim** | Agentic Systems | No | Multi-agent apps | Simulation framework, no-code evaluation |
 | **Langfuse** | Custom Pipelines | Yes (MIT) | Data sovereignty | Self-hostable, full control over data |
 | **Braintrust** | Experimentation | Partial | Early-stage teams | Collaborative design, fast iteration |
-| **Galileo** | Hallucinations | No | Quality assurance | ChainPoll, real-time monitoring |
+| **Galileo** (now Splunk Agent Observability) | Hallucinations | No | Quality assurance | ChainPoll, real-time monitoring; Cisco-owned |
 | **Comet Opik** | LLM Tracing & Evals | Yes (Apache 2.0) | End-to-end observability | Framework integrations, online evaluation rules |
 | **METR** | Catastrophic Risk | Research | Policy guidance | Autonomous capability assessment |
 

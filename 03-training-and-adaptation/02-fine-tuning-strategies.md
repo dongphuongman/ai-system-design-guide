@@ -86,13 +86,13 @@ The "fine-tune the closed model later" plan is getting harder to execute, and op
 
 **Closed-model fine-tuning is shrinking.** OpenAI is winding down self-serve fine-tuning (announced May 7, 2026): organizations that never fine-tuned cannot create jobs; since July 2 only organizations with fine-tuned-model inference in the prior 60 days can; from **January 6, 2027** active customers can no longer create new jobs. Existing fine-tuned models keep serving until their base models are deprecated. Azure OpenAI keeps its own fine-tuned-model schedules, so check the platform, not just the model family.
 
-**Open-weight fine-tuning is the default path.** Training runs on your own GPUs or through inference partners (LangSmith routes trace-derived SFT jobs for open-weight models to Fireworks and Baseten). The pattern scales to the frontier: Cognition's SWE-2 is post-trained from Kimi K3 (2.8T parameters, per Cognition) and Fireworks' Ember-1 is built on K3 to shorten reasoning (about 40% fewer tokens than K3, vendor-reported). Product labs buy the base and compete on post-training.
+**Open-weight fine-tuning is the default path.** Training runs on your own GPUs or through inference partners (LangSmith routes trace-derived SFT jobs for open-weight models to Fireworks and Baseten). The pattern scales to the frontier: Cognition's SWE-2 is post-trained from Kimi K3 (2.8T total / 104B active parameters) and Fireworks' Ember-1 is built on K3 to shorten reasoning (about 40% fewer tokens than K3, vendor-reported). Product labs buy the base and compete on post-training.
 
 **The base license becomes a supply-chain term.** Check it before you invest in a dataset:
 
 | Base | License gate that matters for a hosted product |
 |------|-----------------------------------------------|
-| Kimi K3 | Custom license: a separate deal is needed for model-as-a-service above US$20M revenue in 12 months |
+| Kimi K3 | Custom license: a separate agreement is needed if the company or any affiliate runs a model-as-a-service (MaaS) business and total revenue (with affiliates) exceeds US$20M over 12 months |
 | Qwen3.8-Flash-Next | Qwen Community License 1.0: separate license for any MaaS or coding/office-assistant business, no revenue floor |
 | GLM-5.3 | MIT plus a security-review clause for MaaS providers above US$10B revenue in 12 months |
 | DeepSeek V4.1-Flash, MiMo-V2.6 | MIT |

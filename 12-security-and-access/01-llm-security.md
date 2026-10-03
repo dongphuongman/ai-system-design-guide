@@ -273,7 +273,7 @@ def check_system_prompt_leak(response: str, system_prompt: str) -> bool:
 
 Retention terms are now set per model, not per vendor, and "zero data retention or vendor retention" stopped being a binary choice in 2026:
 
-- **Per-model terms.** Anthropic requires 30-day retention for Claude Fable 5.1 and Mythos 5.1; they are not available under zero data retention (ZDR) unless Anthropic expressly authorizes it, which it does for customers eligible for Enterprise Frontier Safeguards until that program is ready. Opus 5.5 and Sonnet 5.5 are available with ZDR. OpenAI's Agents API (public beta) supports US-only data residency and no ZDR.
+- **Per-model terms.** Anthropic requires 30-day retention for its covered models (Fable 5 and 5.1, Mythos 5 and 5.1); they are not available under zero data retention (ZDR) unless Anthropic expressly authorizes it. Until Enterprise Frontier Safeguards (EFS) ships, EFS-eligible customers get ZDR on Fable 5 and Fable 5.1. Opus 5.5 and Sonnet 5.5 are available with ZDR. OpenAI's Agents API (public beta) supports US-only data residency and no ZDR.
 - **Monitoring that stays in your account.** Anthropic's Enterprise Frontier Safeguards (announced September 1, 2026, rolling out in phases from later this fall) store monitoring data in the customer's own cloud account (S3, Azure Blob Storage or GCS) under customer-managed keys, with fully automated review and no Anthropic human review; flags go to the customer. Anthropic charges nothing for it; the customer pays its cloud provider's storage and egress.
 - **ZDR with automated safety processing.** OpenAI began previewing Private Safety Processing with select customers on August 19, 2026: "ZDR with Private Safety Processing" keeps zero data retention while running automated safety monitoring, and requires customer-controlled storage.
 - **Operator-blind processing (announced, not shipped).** On September 23, 2026 Google described how it plans to add server-side memory to Private AI Compute: memory sealed in encrypted storage whose keys live only on the user's devices, decrypted only inside a hardware-isolated enclave for the duration of a request, plus a tamper-proof public record of the server software that devices check before sending data. No product or date was named, but it is the reference pattern for keeping user or agent memory on a server the operator cannot read.
@@ -667,7 +667,7 @@ The week of May 11-14, 2026 will be remembered as the moment AI-driven offense a
 ### Timeline of the Week
 
 - **May 11-12, Google Threat Intelligence Group**: GTIG reported, for the first time, a threat actor using a zero-day exploit it believes was developed with AI: a 2FA bypass, rooted in a hardcoded trust assumption, in a popular open-source web-based system administration tool. GTIG's counter-discovery may have prevented the planned mass exploitation, but the precedent was set: novel zero-days no longer require human-speed analysis.
-- **May 11, OpenAI Daybreak launch**: OpenAI announced a cybersecurity product line with three tiers: GPT-5.5 (general-purpose), GPT-5.5 with Trusted Access for Cyber (verified defensive work such as secure code review and vulnerability triage), and GPT-5.5-Cyber (authorized red teaming and penetration testing under tighter identity verification). Partners include Akamai, Cisco, Cloudflare, CrowdStrike, Fortinet, Oracle, Palo Alto, Zscaler.
+- **May 11, OpenAI Daybreak launch**: OpenAI announced a cybersecurity product line with three tiers: GPT-5.5 (general-purpose), GPT-5.5 with Trusted Access for Cyber (verified defensive work such as secure code review and vulnerability triage), and GPT-5.5-Cyber (authorized red teaming and penetration testing under tighter identity verification). Partners include Akamai, Cisco, Cloudflare, CrowdStrike, Fortinet, Oracle, Palo Alto Networks and Zscaler.
 - **May 12, Microsoft MDASH**: Microsoft published results from MDASH, its multi-model agentic scanning harness of more than 100 specialized agents across frontier and distilled models. MDASH found 16 Windows vulnerabilities fixed in May Patch Tuesday, including four critical RCEs in tcpip.sys, ikeext.dll, netlogon.dll and dnsapi.dll. MDASH scored 88.45% on CyberGym, leading the leaderboard.
 - **May 14, Anthropic policy essay**: Anthropic published "2028: Two scenarios for global AI leadership," a forward-looking policy essay framing the choices facing democracies on AI capability, security, and deployment.
 
@@ -679,8 +679,8 @@ The practical implication is that the security review loop is now agent-to-agent
 
 ### Defensive Tooling That Became Standard
 
-- **PromptArmor** (ICLR 2026): a guardrail classifier with under 1% false-positive and false-negative rates on the AgentDojo benchmark. A widely cited reference implementation for production prompt-injection detection.
-- **Constitutional Classifiers** (Anthropic): a classifier ensemble trained against a written safety constitution. Reduced jailbreak success rates from 86% to 4.4% on Anthropic's internal red-team suite.
+- **PromptArmor** (Shi et al., [arXiv 2507.15219](https://arxiv.org/abs/2507.15219), July 2025): not a trained classifier but a carefully prompted off-the-shelf LLM that detects and strips injected text before the agent sees it. With GPT-4o, GPT-4.1 or o4-mini as the detector, the authors report false-positive and false-negative rates both under 1% on AgentDojo. Treat it as the baseline any injection defense should beat, not a finished product: it costs a full model call per untrusted input, and its accuracy depends on the reasoning strength of the model you prompt.
+- **Constitutional Classifiers** (Anthropic): input and output classifiers trained on synthetic data generated from a written constitution of allowed and disallowed content. In Anthropic's February 2025 automated evaluation (10,000 jailbreak prompts against Claude 3.5 Sonnet), they cut jailbreak success from 86% to 4.4% (vendor-reported).
 - **Big Sleep** (Google): autonomous vulnerability discovery agent, also offered for defensive use.
 - **MDASH** (Microsoft): the multi-agent defensive harness described above.
 - **Daybreak with GPT-5.5-Cyber** (OpenAI): security-tuned model and product surface.
@@ -731,7 +731,7 @@ The defense is layered. No single layer is sufficient; each catches a different 
 ### Layered Defense Architecture
 
 1. **Content trust tagging at ingestion**: every piece of text that flows into the model is tagged with a trust level (system, user, retrieved-trusted, retrieved-untrusted, tool-output). The trust level travels with the content through the entire pipeline and is visible to the model in the prompt.
-2. **Guardrail classifier**: a fast model (PromptArmor or equivalent) scans retrieved-untrusted content for injection patterns before the content reaches the main model.
+2. **Guardrail classifier**: a detector scans retrieved-untrusted content for injection patterns before the content reaches the main model. It can be a small trained classifier, cheap enough to run on every chunk, or a prompted LLM detector such as PromptArmor, which costs a full model call per input.
 3. **Structural quoting**: untrusted content is wrapped in a clearly delimited block (XML tags or a fenced section) with explicit instructions to the main model that text inside the block is data, not instructions.
 4. **Capability gating**: the agent's tool set is restricted based on the trust level of the content currently in context. If the agent is reading retrieved-untrusted text, write-capable tools are disabled by default and require human approval to invoke, and fetch tools are limited to an allowlist of domains.
 5. **Output validation**: the response is scanned for known exfiltration markers (out-of-band URLs, base64 payloads, instruction echoes) before being returned to the user or fed to downstream tools. Treat this as a backstop, since covert channels such as LLMLeak's benign-looking fetch URLs pass it; the egress allowlist in step 4 is the real control.
@@ -741,7 +741,7 @@ The defense is layered. No single layer is sufficient; each catches a different 
 ```mermaid
 flowchart TD
     A[External content fetched] --> B[Trust tag: retrieved-untrusted]
-    B --> C[PromptArmor guardrail classifier]
+    B --> C[Injection detector: classifier or prompted LLM]
     C -->|injection detected| X[Drop and log]
     C -->|clean| D[Structural quoting wrapper]
     D --> E[Capability gating policy applied]

@@ -65,11 +65,9 @@ SK uses a **Plugin-based model**. Every function (native C# or LLM-based) is reg
 ---
 
 ## References
-- Microsoft Learn. "Semantic Kernel Documentation" (2025)
+- Microsoft Learn. "Introduction to Semantic Kernel": https://learn.microsoft.com/en-us/semantic-kernel/overview/
 - Microsoft Learn. "Planning" (planners deprecated and removed; function calling): https://learn.microsoft.com/en-us/semantic-kernel/concepts/planning
 - Microsoft. "Microsoft Agent Framework Version 1.0" (Apr 2026): https://devblogs.microsoft.com/agent-framework/microsoft-agent-framework-version-1-0/
-- Azure Architecture Center. "AI Design Patterns with Semantic Kernel" (2025)
-- Build 2025. "The Future of Copilots with SK" (2025 Conference Recap)
 
 ---
 

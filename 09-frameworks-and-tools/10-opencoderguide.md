@@ -59,7 +59,7 @@ These models can be self-hosted, fine-tuned, and deployed without any API depend
 |-------|----------|-----------------------|---------|-----------------------|
 | Xiaomi MiMo-V2.6-Pro / -Flash | Sep 21, 2026 | 1.02T / 42B; 309B / 15B | MIT | 1M context; top open model on the Artificial Analysis Intelligence Index v4.3.2 (46) |
 | Z.ai GLM-5.3 | Weights Aug 28, 2026 | 744B / 40B | MIT, plus a security review for MaaS providers above US$10B revenue in 12 months | AA 45; API $1.40/$4.40 per 1M; 211/272 on the SWE-Bench Pro v2 private set |
-| Moonshot Kimi K3 | July 2026 | 2.8T total (per Cognition) | Custom: a separate agreement for MaaS above US$20M revenue in 12 months | AA 44; 214/272 on SWE-Bench Pro v2 private; base for Cognition SWE-2 and Fireworks Ember-1 |
+| Moonshot Kimi K3 | July 2026 | 2.8T / 104B active | Custom: a separate agreement for companies that run any MaaS business and whose total revenue (with affiliates) exceeds US$20M over 12 months | AA 44; 214/272 on SWE-Bench Pro v2 private; base for Cognition SWE-2 and Fireworks Ember-1 |
 | Z.ai GLM-5.3-Flash | Aug 26, 2026 | 320B / 18B | MIT | AA 42; API $0.15/$0.50 per 1M |
 | DeepSeek V4.1-Flash | Sep 10, 2026 | 552B backbone; 8B active in prefill, 16B in decode | MIT | AA 39; vendor-reported DeepSWE v1.1 74.2 at max effort |
 | Qwen3.8-Flash-Next | Aug 26, 2026 | 125B / 6B plus a 51B n-gram table | Qwen Community License 1.0 | Any MaaS or AI coding-assistant **business** needs a separate license from Qwen, with no revenue floor; purely internal use is exempt |
@@ -71,15 +71,15 @@ These models can be self-hosted, fine-tuned, and deployed without any API depend
 
 ### Older Small Models Still Used for Completions
 
-The 2024-era coder models remain popular for low-latency fill-in-the-middle (FIM) completion on modest hardware, where agentic capability does not matter. Their benchmark numbers below are from their original releases and are far behind current frontier models on agentic tasks.
+The 2024-era coder models remain popular for low-latency fill-in-the-middle (FIM) completion on modest hardware, where agentic capability does not matter. The HumanEval+ numbers below are as reported in the Qwen2.5-Coder technical report (arXiv 2409.12186, Tables 5 and 16), except StarCoder2, which comes from its Hugging Face model cards. They are far behind current frontier models on agentic tasks.
 
 | Model | Parameters | Context | HumanEval+ | License |
 |-------|------------|---------|------------|---------|
-| Qwen2.5-Coder-32B-Instruct | 32B | 128K | 88.2% | Apache 2.0 |
-| Qwen2.5-Coder-7B-Instruct | 7B | 128K | 79.3% | Apache 2.0 |
-| Qwen2.5-Coder-1.5B | 1.5B | 32K | 65.8% | Apache 2.0 |
-| DeepSeek-Coder-V2-Lite | 16B MoE (2.4B active) | 128K | 81.1% | DeepSeek model license |
-| StarCoder2-15B / 7B / 3B | 15B / 7B / 3B | 16K | 73.3% (15B) | BigCode OpenRAIL-M |
+| Qwen2.5-Coder-32B-Instruct | 32B | 128K | 87.2% | Apache 2.0 |
+| Qwen2.5-Coder-7B-Instruct | 7B | 128K | 84.1% | Apache 2.0 |
+| Qwen2.5-Coder-1.5B-Instruct | 1.5B | 32K | 66.5% | Apache 2.0 |
+| DeepSeek-Coder-V2-Lite-Instruct | 16B MoE (2.4B active) | 128K | 75.6% | DeepSeek model license |
+| StarCoder2-15B / 7B / 3B | 15B / 7B / 3B | 16K | 37.8% (15B base; 63.4% for StarCoder2-15B-Instruct-v0.1) | BigCode OpenRAIL-M |
 
 ```python
 # Self-hosted with vLLM (use vLLM >= 0.30.0: earlier releases have
@@ -120,7 +120,7 @@ Building a coding-assistant product to sell?
 
 **Website:** cursor.com | **Base:** VS Code fork | **Pricing:** Pro from $20/mo, Teams and Enterprise plans
 
-Cursor is the leading AI-native IDE, and since August 14 to 15, 2026 it is **part of SpaceX** (reported at about $60B in SpaceX stock). Grok 4.6 and 4.7 launched on Cursor's own blog. The announcement says nothing about continued access to third-party models or about data-use commitments, so treat both as contract questions, not assumptions. Cursor earned AIUC-1 agent certification on Aug 13, 2026.
+Cursor is the leading AI-native IDE, and since August 14 to 15, 2026 it is **part of SpaceX** (reported at about $60B in SpaceX stock). Grok 4.6 and 4.7 launched on Cursor's own blog. The acquisition announcement said nothing about continued access to third-party models or about data-use commitments, and two weeks later the model question got a concrete answer: on Aug 28, 2026 OpenAI told SpaceX it would wind down its contract supplying OpenAI models to Cursor, with a proposed shutoff of **November 12, 2026**, and would not supply future models (GPT-6 Astra included) while Cursor is under SpaceX ownership. The notice covers only OpenAI's models; treat continued access to the others, and data use, as contract questions, not assumptions. Cursor earned AIUC-1 agent certification on Aug 13, 2026.
 
 | Feature | Description |
 |---------|-------------|
@@ -130,7 +130,7 @@ Cursor is the leading AI-native IDE, and since August 14 to 15, 2026 it is **par
 | **Projects** (beta, Sep 10, 2026) | A coordinator agent plans work and delegates to parallel subagents, up to thousands; Cursor says new Projects users merge 30% more PRs (vendor-reported) |
 | **Rollouts and Security Review** (Sep 23, 2026) | A monitor on every PR that tracks change health per environment as it deploys, and a PR scanner for exploitable bugs (Teams and Enterprise) |
 | **Rules** | Project-level AI instructions in `.cursor/rules`, and `AGENTS.md` |
-| **Model choice** | OpenAI, Anthropic, Google, xAI Grok and Cursor's own models |
+| **Model choice** | Anthropic, Google, xAI Grok and Cursor's own models; OpenAI models until the proposed Nov 12, 2026 shutoff (OpenAI says it will not supply GPT-6 Astra or later models) |
 
 **Best for**: Frontend/full-stack developers who want agentic editing within a familiar GUI, and teams that want cloud agents without running the orchestration themselves.
 
@@ -250,7 +250,9 @@ Agent Server (OpenHands SDK)
 Aider pioneered the terminal-first, git-native coding agent: it commits changes as it goes, keeps a repository map of files not in context, and separates an architect mode from the editing model. It has **gone quiet**: the last PyPI release is 0.86.2 (Feb 12, 2026) and the last commit was May 22, 2026. An unmaintained harness does not learn newer models' API constraints (recent Claude and GPT-6 models reject custom sampling parameters, for example) or ship security fixes, so prefer OpenCode or Codex CLI for new work.
 
 ```bash
-# 2025-era usage, shown for its git-native workflow
+# 2025-era usage, shown for its git-native workflow; claude-3-7-sonnet-20250219
+# was retired Feb 19, 2026, and current Claude models may reject the sampling
+# parameters Aider sends
 pip install aider-chat
 aider --model claude-3-7-sonnet-20250219
 /add src/auth.py src/models.py
@@ -300,15 +302,15 @@ SWE-bench Verified stopped separating frontier agents: scores cluster near the c
 
 ### Historical: HumanEval+ and LiveCodeBench (2025 snapshot)
 
-Both are retired as frontier signals: HumanEval is saturated, and Artificial Analysis now lists LiveCodeBench among its legacy evaluations. The tables are kept as a record of the 2025 state of the art.
+Both are retired as frontier signals: HumanEval is saturated, and Artificial Analysis now lists LiveCodeBench among its legacy evaluations. The tables are kept as a record of the 2025 state of the art. The GPT-4o, Qwen and DeepSeek HumanEval+ rows are from the Qwen2.5-Coder technical report; StarCoder2-15B is the base model, from its model card.
 
 | Model | HumanEval+ Score |
 |-------|-----------------|
 | Claude 3.7 Sonnet | 93.6% |
-| GPT-4o | 90.2% |
-| Qwen2.5-Coder-32B-Instruct | 88.2% |
-| DeepSeek-Coder-V2-Instruct | 90.2% |
-| StarCoder2-15B | 73.3% |
+| GPT-4o (2024-08-06) | 86.0% |
+| Qwen2.5-Coder-32B-Instruct | 87.2% |
+| DeepSeek-Coder-V2-Instruct | 82.3% |
+| StarCoder2-15B | 37.8% |
 
 | Model | LiveCodeBench Score |
 |-------|---------------------|
@@ -458,7 +460,7 @@ It depends on three axes:
 
 2. **Model control**: If you need to use any model (or your own fine-tuned model), use OpenCode or OpenHands. If you're okay with Claude only and want best-in-class results, use Claude Code; Codex CLI is the equivalent for OpenAI shops.
 
-3. **Open-source and vendor requirements**: Enterprise security teams often require open-source tools they can audit. OpenCode (MIT), OpenHands (MIT) and Codex CLI (Apache-2.0) are the answer. Ownership is now part of the review too: Cursor is part of SpaceX and Windsurf part of Cognition, both of which build their own models, so I would ask for contractual commitments on third-party model access and data use.
+3. **Open-source and vendor requirements**: Enterprise security teams often require open-source tools they can audit. OpenCode (MIT), OpenHands (MIT) and Codex CLI (Apache-2.0) are the answer. Ownership is now part of the review too: Cursor is part of SpaceX and Windsurf part of Cognition, both of which build their own models. That risk is no longer hypothetical: OpenAI is winding down its model supply to Cursor (proposed shutoff Nov 12, 2026) after the SpaceX deal. I would ask for contractual commitments on third-party model access and data use, and keep model routing for batch and CI work in a layer we control.
 
 For a typical startup, I'd recommend: Cursor for daily development, Claude Code or Codex for batch tasks (PRs from GitHub issues), and OpenHands or OpenCode for self-hosted CI pipelines.
 
@@ -509,12 +511,13 @@ Only narrowly. The feature (public preview since Sep 1, 2026, off by default) le
 
 - Scale. SWE-Bench Pro v2 (Sep 2026): https://scale.com/leaderboard
 - Terminal-Bench leaderboard: https://www.tbench.ai/
-- arXiv 2609.34262. "Maintaining Benchmarks Against Increasingly Capable Agents: Detection and Remediation of Unearned Passes" (Sep 2026)
+- arXiv 2609.34262. "Maintaining Benchmarks Against Increasingly Capable Agents: Detection and Remediation of Unearned Passes" (Sep 2026): https://arxiv.org/abs/2609.34262
 - OpenCode: https://github.com/anomalyco/opencode
 - Codex CLI: https://github.com/openai/codex
 - Gemini CLI: https://github.com/google-gemini/gemini-cli
 - Google. "Introducing Google Antigravity CLI": https://antigravity.google/blog/introducing-google-antigravity-cli
 - Cursor. "Joining SpaceX" (Aug 2026): https://cursor.com/blog/joining-spacex
+- OpenAI. "Our decision on Cursor following its acquisition by SpaceX" (Aug 28, 2026): https://openai.com/index/our-decision-on-cursor-following-its-acquisition-by-spacex/
 - GitHub. "Copilot code review can now approve pull requests" (Sep 1, 2026): https://github.blog/changelog/2026-09-01-copilot-code-review-can-now-approve-pull-requests/
 - Cognition blog: https://cognition.com/blog
 - Qwen2.5-Coder: https://qwenlm.github.io/blog/qwen2.5-coder/

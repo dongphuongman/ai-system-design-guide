@@ -2669,10 +2669,10 @@ def cohen_kappa(labels_a, labels_b):
     kappa = (p_observed - p_expected) / (1 - p_expected)
     return kappa
 
-# Interpretation:
-# kappa > 0.8: Excellent agreement (criteria are clear)
-# kappa 0.6-0.8: Good agreement (minor clarifications needed)
-# kappa < 0.6: Poor agreement (rewrite criteria)
+# Working thresholds for eval labels (stricter than the Landis-Koch bands in the glossary):
+# kappa > 0.8: criteria are clear
+# kappa 0.6-0.8: usable; clarify the criteria behind the disagreements
+# kappa < 0.6: too low to trust as ground truth (rewrite criteria)
 ```
 
 ### Label Quality > Label Quantity
@@ -3127,7 +3127,7 @@ A plain-language glossary of the technical terms used throughout this guide. Sha
 | **Confusion Matrix** | A 2x2 table showing TP, FP, FN, TN counts; the foundation of all classification metrics |
 | **Confidence Interval (CI)** | A range of values (e.g., 72%–81%) within which the true metric likely falls, given sampling uncertainty |
 | **Bias Correction** | Adjusting raw judge scores to account for systematic over- or under-counting of passes/fails |
-| **Cohen's Kappa** | A statistic measuring agreement between two raters (or a rater and ground truth), adjusting for chance agreement. Values: <0.2 poor, 0.4–0.6 moderate, 0.6–0.8 substantial, >0.8 almost perfect |
+| **Cohen's Kappa** | A statistic measuring agreement between two raters (or a rater and ground truth), adjusting for chance agreement. Values (Landis and Koch): <0 poor, 0–0.2 slight, 0.2–0.4 fair, 0.4–0.6 moderate, 0.6–0.8 substantial, >0.8 almost perfect |
 
 ### Data & Workflow Terms
 
@@ -3975,7 +3975,7 @@ Start today. Your future self will thank you.
 | **Comet Opik** | LLM tracing & evaluation | Apache 2.0 | [GitHub](https://github.com/comet-ml/opik) · [Site](https://www.comet.com/site/products/opik/) |
 | **judgy** | Statistical bias correction | Open | [GitHub](https://github.com/ai-evals-course/judgy) |
 | **Braintrust** | Experimentation & logging | Partial | [Docs](https://www.braintrust.dev/docs) |
-| **Galileo** | Hallucination detection | Proprietary | [Site](https://www.galileo.ai/) |
+| **Galileo** (now Splunk Agent Observability, Cisco) | Hallucination detection | Proprietary | [Docs](https://docs.galileo.ai/) · [Splunk](https://www.splunk.com/en_us/products/agent-observability.html) |
 | **Maxim** | Agentic system evaluation | Proprietary | [Site](https://www.getmaxim.ai/) |
 
 ### Strategy Comparison Matrix
@@ -3989,7 +3989,7 @@ Start today. Your future self will thank you.
 | **RAGAS** | RAG-specific | Yes (Apache 2.0) | RAG pipelines | Reference-free metrics, synthetic test data generation |
 | **Maxim** | Agentic Systems | No | Multi-agent apps | Simulation framework, no-code evaluation |
 | **Braintrust** | Experimentation | Partial | Early-stage teams | Collaborative design, fast iteration |
-| **Galileo** | Hallucinations | No | Quality assurance | ChainPoll, real-time monitoring |
+| **Galileo** (now Splunk Agent Observability) | Hallucinations | No | Quality assurance | ChainPoll, real-time monitoring; Cisco-owned |
 | **Comet Opik** | LLM Tracing & Evals | Yes (Apache 2.0) | End-to-end observability | Framework integrations, online evaluation rules |
 | **METR** | Catastrophic Risk | Research | Policy guidance | Autonomous capability assessment |
 

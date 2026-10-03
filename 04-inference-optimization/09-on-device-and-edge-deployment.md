@@ -28,7 +28,7 @@ The key mental model: these tools are **not substitutes**. They occupy different
 | **MLX** | Inference engine | Apple's array framework; the fastest Apple Silicon path; research and fine-tuning. |
 | **vLLM** | Serving system | High-throughput concurrent serving with PagedAttention and continuous batching; OpenAI-compatible. The production answer. |
 | **vllm-metal** | Serving system (Apple Silicon) | vLLM's Apple Silicon plugin (v0.30.0, September 23, 2026): the vLLM scheduler, paged KV cache, continuous batching, and OpenAI server on MLX models, with batched MTP speculative decoding and a Homebrew install. |
-| **TGI / TensorRT-LLM** | Serving system | Hugging Face's and NVIDIA's high-throughput servers; production. |
+| **SGLang / TensorRT-LLM** | Serving system | High-throughput servers (SGLang with RadixAttention prefix caching; TensorRT-LLM for maximum NVIDIA performance); production. Hugging Face TGI is in maintenance mode (repository archived March 2026), and Hugging Face recommends vLLM or SGLang for new deployments. |
 | **ExecuTorch** | Embedded/mobile runtime | PyTorch-native on-device inference (phone to microcontroller); reached 1.0 in late 2025 and ships in apps for billions of users. Publishers now release official exports (Meta's Muse Glimmer 30B `.pte`, August 2026). |
 | **Apple Foundation Models framework** | OS-provided model | An on-device model that ships with the OS, so the app downloads nothing; see the next section. |
 | **Core ML / ONNX Runtime / MLC LLM** | Embedded/mobile runtime | Apple on-device, cross-platform, and compile-to-many-targets (including browser/WebGPU) respectively. |
@@ -138,7 +138,7 @@ The useful on-device answer is often several small specialists rather than one g
 
 1. **Prototype** with Ollama (CLI) or LM Studio (GUI) on a GGUF Q4_K_M model; validate quality and prompts on the smallest model that passes.
 2. **Pick the largest model and best quant** that fits the target hardware with KV-cache headroom.
-3. **Switch the serving engine** for any concurrent endpoint: vLLM (NVIDIA or AMD), vllm-metal (Apple Silicon), TensorRT-LLM (max NVIDIA), or TGI. Keep the OpenAI-compatible API so application code barely changes.
+3. **Switch the serving engine** for any concurrent endpoint: vLLM (NVIDIA or AMD), vllm-metal (Apple Silicon), SGLang, or TensorRT-LLM (max NVIDIA). Keep the OpenAI-compatible API so application code barely changes.
 4. **For mobile or edge**, first check the platform model (Apple's Foundation Models framework on iOS 27). Otherwise export to ExecuTorch, Core ML, or ONNX Runtime / MLC LLM, quantize to 4-bit (prefer vendor QAT builds), and budget for under 4 GB of RAM and the bandwidth limit.
 
 Common pitfalls: treating Ollama or LM Studio as a server (it serializes under load); forgetting the KV cache when sizing memory (long context times parallel slots can dominate); over-quantizing (Q2/Q3 hurts reasoning); conflating "vLLM beats Ollama" with "GPU beats Mac"; assuming NPU TOPS equals LLM speed; mismatching engine to hardware (vLLM is GPU-first but now runs on Apple Silicon through vllm-metal, MLX is Apple-only, llama.cpp is the portability fallback); and adopting an exotic low-bit format without checking that your runtime can load it.
@@ -152,7 +152,7 @@ Common pitfalls: treating Ollama or LM Studio as a server (it serializes under l
 ### Q: A team prototyped on Ollama and wants to ship it as a shared API. What changes and why?
 
 **Strong answer:**
-Ollama is the wrong tool for a shared endpoint. It serves with limited parallelism and queues excess requests first-in-first-out, so under concurrency latency spikes and requests start failing. The fix is to switch the serving engine to vLLM (or TensorRT-LLM or TGI), keeping the same OpenAI-compatible API so the app barely changes. vLLM wins structurally, not by tuning: PagedAttention stores the KV cache in non-contiguous blocks to eliminate most of the memory waste, and continuous batching swaps finished requests out and queued ones in mid-batch, so concurrent demand becomes throughput. First-party benchmarks show roughly an order-of-magnitude higher throughput and far lower tail latency under load. I would also right-size the model and quant to the target GPU with KV-cache headroom, and add autoscaling and monitoring, which Ollama does not provide.
+Ollama is the wrong tool for a shared endpoint. It serves with limited parallelism and queues excess requests first-in-first-out, so under concurrency latency spikes and requests start failing. The fix is to switch the serving engine to vLLM (or SGLang or TensorRT-LLM), keeping the same OpenAI-compatible API so the app barely changes. vLLM wins structurally, not by tuning: PagedAttention stores the KV cache in non-contiguous blocks to eliminate most of the memory waste, and continuous batching swaps finished requests out and queued ones in mid-batch, so concurrent demand becomes throughput. First-party benchmarks show roughly an order-of-magnitude higher throughput and far lower tail latency under load. I would also right-size the model and quant to the target GPU with KV-cache headroom, and add autoscaling and monitoring, which Ollama does not provide.
 
 ### Q: When would you choose local or on-device inference over a cloud API?
 

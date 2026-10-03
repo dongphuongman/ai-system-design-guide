@@ -82,7 +82,7 @@ The design axis interviewers now probe is **when** consolidation runs:
 | **Sleep time** | Anthropic Dreams (research preview), Mem0's Dream (paid plans) | Off the request path; staleness between runs |
 | **Read time** | Just-in-Time Memory (arXiv 2609.27334): keep raw trajectories, curate per task | Beat the strongest write-time baseline by 3.9 to 16.3 success-rate points; curation cost moves onto reads |
 
-More memory is not automatically better: MemTrapBench (arXiv 2608.20202) found every memory strategy it tested underperformed the no-memory setting because correct, relevant memories still caused reasoning fixation. Gate memory injection, and evaluate task success with and without it.
+More memory is not automatically better: on MemTrapBench (arXiv 2608.20202) tasks built to trigger memory traps, every memory strategy it tested underperformed the no-memory setting because correct, relevant memories still caused reasoning fixation. Gate memory injection, and evaluate task success with and without it.
 
 ---
 

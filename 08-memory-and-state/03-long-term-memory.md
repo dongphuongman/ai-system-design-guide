@@ -51,7 +51,7 @@ Memory is a liability if it grows unchecked.
 - **Temporal Decay**: Older memories lose their "relevance score" unless frequently accessed.
 - **Consolidation**: Merging 10 separate interactions about "billing" into one high-quality summary node. This increasingly runs **off the request path**: Anthropic's Dreams research preview reads a memory store plus past transcripts and writes a reorganized store, and Mem0's Dream does merging and superseding on its paid plans.
 - **Explicit Forgetting**: Honoring GDPR "Right to be Forgotten" by deleting all episodic and semantic clusters associated with a user ID, including derived summaries, backups, and git history for file-based memory.
-- **Gated injection**: retrieval relevance is not the same as usefulness. MemTrapBench (arXiv 2608.20202) found that correct, semantically relevant memories still caused reasoning fixation and belief distortion, and every memory strategy it tested underperformed no memory. Decide per request whether memory goes into context at all.
+- **Gated injection**: retrieval relevance is not the same as usefulness. On MemTrapBench (arXiv 2608.20202) tasks built to trigger memory traps, correct, semantically relevant memories still caused reasoning fixation and belief distortion, and every memory strategy it tested underperformed no memory. Decide per request whether memory goes into context at all.
 
 ---
 

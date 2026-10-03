@@ -58,7 +58,7 @@ Scores below are labeled by source. "AA" is the Artificial Analysis Intelligence
 
 | Model | Strengths | Cons | Context | Best For |
 |-------|-----------|------|---------|----------|
-| **Claude Opus 5.5** ($4 / $20) | Anthropic's recommended default. AA 58, the top score. Beat Fable 5.1 and GPT-6 Astra across Anthropic's launch table (Terminal-Bench 4.0 66.4% at xhigh, vendor-reported), though Sonnet 5.5 later reported a higher Terminal-Bench score. 0.05x cache reads; ZDR available | Default effort dropped to `medium`; thinking cannot be disabled; forced `tool_choice` returns 400; headline scores include safeguard fallback to Opus 4.8 or Opus 5 | 1M / 128K out | Agentic coding, computer use, hard production work |
+| **Claude Opus 5.5** ($4 / $20) | Anthropic's recommended default. AA 58, the top score. Beat Fable 5.1 on every row of Anthropic's launch table and GPT-6 Astra on most (Terminal-Bench 4.0 66.4% at xhigh vs 57.9%), though Astra led on AutomationBench (41.4% vs 40.0%) and Terminal-Bench-Science (64.6% vs 58.7%); all vendor-reported. Sonnet 5.5 later reported a higher Terminal-Bench score. 0.05x cache reads; ZDR available | Default effort dropped to `medium`; thinking cannot be disabled; forced `tool_choice` returns 400; headline scores include safeguard fallback to Opus 4.8 or Opus 5 | 1M / 128K out | Agentic coding, computer use, hard production work |
 | **Claude Sonnet 5.5** ($2 / $10) | Within a few points of Opus 5.5 on Anthropic's agentic evals (vendor-reported Terminal-Bench 4.0 70.6%, OSWorld 2.1 80.1% partial). AA 56. ZDR available | Vendor numbers not yet independently reproduced; `thinking: disabled` returns 400; thinking blocks are bound to the producing account | 1M / 128K | Agent fleets, coding at scale, default chat |
 | **Claude Fable 5.1** ($10 / $50) | Anthropic's ceiling. Flat $10 / $50 to 1M with 0.025x cache reads. Terminal-Bench 4.0 leaderboard 57.88% (max) | Opus 5.5 beats it on Anthropic's own tables at 40% of the price; AA 53; 30-day retention, ZDR only if authorized | 1M / 128K | Tasks where Opus 5.5 at higher effort still fails your evals |
 | **GPT-6 Astra** ($10 / $50) | OpenAI's ceiling. First on the Terminal-Bench 4.0 leaderboard (58.18%, max). About a third of GPT-5.6 Sol's tokens per coding task (AA). AA 53 | Whole request at $20 / $75 above 272K; no temperature, top_p, logprobs or `none` effort; first OpenAI model rated Critical for cyber, so exploit work is restricted outside Daybreak | 1.05M / 128K | Ceiling work on the OpenAI stack; long coding tasks where token efficiency offsets price |
@@ -89,7 +89,7 @@ Scores below are labeled by source. "AA" is the Artificial Analysis Intelligence
 |-------|------------|---------|-----------|----------|
 | **Xiaomi MiMo-V2.6-Pro** | 1.02T / 42B active | MIT | 46 | Top open model; two 8-GPU nodes |
 | **Z.ai GLM-5.3** | 744B / 40B active | MIT plus security review for MaaS operators above US$10B revenue | 45 | Agentic coding |
-| **Moonshot Kimi K3** | 2.8T total (per Cognition) | Custom: separate deal for MaaS above US$20M revenue | 44 | Strong generalist if the license fits |
+| **Moonshot Kimi K3** | 2.8T / 104B active | Custom: separate deal for MaaS above US$20M revenue | 44 | Strong generalist if the license fits |
 | **Z.ai GLM-5.3-Flash** | 320B / 18B active | MIT | 42 | Default self-host candidate for agentic coding |
 | **Qwen3.8-Flash-Next** | 125B / 6B active + 51B N-gram memory | Qwen Community 1.0 (separate license for any MaaS or coding/office-assistant business) | 40 | Qwen4 architecture preview; host-RAM parameter memory |
 | **DeepSeek V4.1-Flash** | 552B (763B checkpoint); 8B / 16B active | MIT | 39 | Cheap 1M-context serving |
@@ -109,7 +109,7 @@ Check the license before the benchmark. Several leading open models now carry re
 | Use Case | Recommended Models | Rationale |
 |----------|-------------------|-----------|
 | **Capability-ceiling research / hardest problems** | Claude Fable 5.1, GPT-6 Astra | Escalate here only after Opus 5.5 at higher effort fails your evals; Fable stays flat-priced to 1M, Astra doubles above 272K |
-| **Autonomous Dev** | Claude Opus 5.5, Claude Sonnet 5.5, GPT-6.1 Sol; Gemini 3.8 Flash for cost per task | Opus 5.5 beat Fable 5.1 and Astra in Anthropic's launch table, and Sonnet 5.5 reports scores within a few points of it (both vendor-reported); Sonnet 5.5 and GPT-6.1 Sol cover fleets at $2 / $10 |
+| **Autonomous Dev** | Claude Opus 5.5, Claude Sonnet 5.5, GPT-6.1 Sol; Gemini 3.8 Flash for cost per task | Opus 5.5 beat Fable 5.1 on every row of Anthropic's launch table and Astra on the coding rows (Astra led on AutomationBench and Terminal-Bench-Science), and Sonnet 5.5 reports scores within a few points of it (both vendor-reported); Sonnet 5.5 and GPT-6.1 Sol cover fleets at $2 / $10 |
 | **Enterprise RAG** | Claude Sonnet 5.5, Gemini 3.8 Flash, GPT-6 Luna for extraction | Flat 1M pricing on Claude; Flash for volume; keep OpenAI prompts under 272K |
 | **Customer Support** | GPT-6 Luna, Gemini 3.8 Flash (low thinking), Claude Haiku 4.5 | Low latency and cost; escalate hard tickets to a mid-tier model |
 | **Reasoning / Debug** | Claude Opus 5.5 (high or xhigh effort), GPT-6 Astra, Claude Fable 5.1 | Effort is the dial; pay for max only where evals show a gain |

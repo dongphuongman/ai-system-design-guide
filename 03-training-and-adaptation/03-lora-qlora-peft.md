@@ -16,7 +16,7 @@ Parameter-Efficient Fine-Tuning (PEFT) is the industry standard for adapting LLM
 
 ## The PEFT Revolution
 
-Full fine-tuning of frontier-scale open models (Llama 3.1 405B dense, DeepSeek V4 Pro at roughly 1.6T total parameters, Kimi K3 at 2.8T per Cognition) is out of reach for most enterprises, and closed frontier models cannot be fully fine-tuned by customers at all. PEFT allows:
+Full fine-tuning of frontier-scale open models (Llama 3.1 405B dense, DeepSeek V4 Pro at roughly 1.6T total parameters, Kimi K3 at 2.8T total / 104B active) is out of reach for most enterprises, and closed frontier models cannot be fully fine-tuned by customers at all. PEFT allows:
 1. **Memory Efficiency**: Train a 70B model on a single 80 GB GPU with QLoRA.
 2. **Speed**: 2x faster training by updating <1% of weights.
 3. **Modularity**: Swap "skills" (adapters) onto a shared base model without reloading weights.

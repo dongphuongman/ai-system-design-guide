@@ -185,7 +185,7 @@ class SelfConsistencyDecoder:
         pass
 ```
 
-**Best for:** Math, logic, coding with verifiable answers. Accuracy gain: 5-15%.
+**Best for:** Math, logic, coding with verifiable answers. The original paper's (Wang et al.) headline gains over greedy chain-of-thought ranged from +3.9 points (ARC-challenge) to +17.9 (GSM8K), measured on 2022-era models with no built-in reasoning. Do not carry those numbers over to a current reasoning model; measure the gain on your own eval set before paying k times the cost.
 
 ### Sampling Controls Are Disappearing
 
@@ -201,7 +201,7 @@ What this changes for ensembles:
 
 - **Diversity comes from elsewhere.** Default sampling on these models is already stochastic, so k samples still disagree. When they do not disagree enough, vary the prompt, the reasoning effort, or the model family instead of the temperature.
 - **Confidence comes from votes, not logprobs.** With no logprobs on Astra, vote share across samples (or a judge score) is the confidence signal.
-- **Do not ask the newest Claude models to write out their reasoning.** A prompt that demands a `<thinking>` section or a `reasoning` field in JSON can be refused under the `reasoning_extraction` category, and those refusals have been billed since September 24, 2026. Vote on final answers; if you need the path, ask for a short explanation or read the summarized thinking blocks.
+- **Do not ask the newest Claude models to write out their reasoning.** A prompt that demands a `<thinking>` section or a `reasoning` field in JSON can be refused under the `reasoning_extraction` category, and those refusals have been billed since September 24, 2026. Vote on final answers; if you need the path, ask for a short explanation, or set `thinking: {type: "adaptive", display: "summarized"}` and read the summarized thinking (at the default `display: "omitted"` these models return empty thinking blocks).
 
 ### Best-of-N with Reward Model
 
@@ -269,7 +269,7 @@ class BestOfNSampler:
         return 1 - np.mean(similarities)  # Higher = more diverse
 ```
 
-**Best for:** Open-ended generation, creative tasks. Accuracy gain: 10-30%.
+**Best for:** Open-ended generation, creative tasks. The gain is bounded by the scorer: against a proxy reward model, best-of-n improves true quality at first and can then degrade it as n grows (Gao et al., 2022), so check selections against human ratings and keep N modest.
 
 ---
 
@@ -452,17 +452,19 @@ Is there a single "correct" answer format?
 
 ### Ensemble Cost Matrix
 
-| Method | Cost Multiplier | Latency | Accuracy Gain | When to Use |
+| Method | Cost Multiplier | Latency | Expected Effect | When to Use |
 |--------|-----------------|---------|---------------|-------------|
 | Single Model | 1x | 1x | Baseline | Low-stakes, high-volume |
-| Self-Consistency k=3 | 3x | 1x (parallel) | +5-8% | Reasoning, latency-sensitive |
-| Self-Consistency k=10 | 10x | 1x (parallel) | +10-15% | Math, accuracy-critical |
-| Best-of-N (N=8) | 8x + scoring | 1x (parallel) | +15-25% | Creative generation |
+| Self-Consistency k=3 | 3x | 1x (parallel) | Modest; a three-way split has no majority | Reasoning, latency-sensitive |
+| Self-Consistency k=10 | 10x | 1x (parallel) | Larger on verifiable answers, with diminishing returns as k grows | Math, accuracy-critical |
+| Best-of-N (N=8) | 8x + scoring | 1x (parallel) | Bounded by the scorer; can degrade against a hackable reward model | Creative generation |
 | Panel of Judges (3) | 3x eval | 1x (parallel) | Bias reduction | Evaluation tasks |
 | Multi-Agent Debate | 6x | 3x | Hallucination ↓ | Fact-critical |
 | Mixture of Agents | 5-8x | 2x | Better synthesis | Complex reports |
 | Cascade with quality gate | 1x + gate + (escalation rate x strong model) | 1x, 2x on escalation | Near strong-model quality if the gate is reliable | High volume with a verifiable gate |
 | Cross-family critique (one round) | ~3x | ~3x (sequential) | Catches family-specific errors | Code review, fact-critical drafts |
+
+The effect column is directional on purpose. Effect sizes depend on the model and the task, so measure each method against a single-model baseline on your own eval set before paying the multiplier.
 
 ### When NOT to Use Ensembles
 
@@ -538,7 +540,8 @@ If the panel is accurate on the gold set, 95% agreement means I can probably dro
 ## References
 
 - Verga et al. "Replacing Judges with Juries: Evaluating LLM Generations with a Panel of Diverse Models" (2024)
-- Wang et al. "Self-Consistency Improves Chain of Thought Reasoning" (2023)
+- Wang et al. "Self-Consistency Improves Chain of Thought Reasoning in Language Models" (ICLR 2023): https://arxiv.org/abs/2203.11171
+- Gao, Schulman, and Hilton. "Scaling Laws for Reward Model Overoptimization" (2022): https://arxiv.org/abs/2210.10760
 - Du et al. "Improving Factuality and Reasoning in Language Models through Multiagent Debate" (2023)
 - Wang et al. "Mixture-of-Agents Enhances Large Language Model Capabilities" (2024)
 - Zheng et al. "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena" (2023)

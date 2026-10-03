@@ -76,11 +76,11 @@ The standard back-of-envelope: **training FLOPs ≈ 6 × N × D**, where N is pa
 
 | Model | N (per token) | D | ≈ FLOPs | Reported compute |
 |-------|---------------|---|---------|------------------|
-| Llama 3.1 405B (dense) | 405B | ~15T | 3.8 × 10^25 | 30.84M H100 GPU-hours (Meta model card) |
+| Llama 3.1 405B (dense) | 405B | 15.6T | 3.8 × 10^25 | 30.84M H100 GPU-hours (Meta model card) |
 | DeepSeek-V3 (MoE, 671B total) | 37B active | 14.8T | ~3.3 × 10^24 | 2.788M H800 GPU-hours (DeepSeek report) |
 
 Two lessons interviewers probe:
-- **For MoE, use active parameters**, not total. DeepSeek-V3 has 18x more total parameters than its active count, which is why its training FLOPs are about a tenth of Llama 3.1 405B's.
+- **For MoE, use active parameters**, not total. Counting DeepSeek-V3's 671B total parameters would overstate its compute by about 18x. It uses 37B active parameters per token against Llama 3.1 405B's 405B dense, so on similar token counts its training FLOPs are about a tenth.
 - **GPU-hours = FLOPs / (peak FLOPs × MFU)**. Model FLOPs utilization of 35-45% is typical for well-tuned large dense runs in BF16; Meta reports 390 TFLOPs per GPU in FP8 on 32K GPUs for Llama 4 Behemoth. Memory for training (weights, gradients, optimizer state at ~16 bytes per parameter in mixed precision before sharding) is what forces ZeRO/FSDP sharding and pipeline parallelism, long before FLOPs run out.
 
 ---

@@ -1,6 +1,6 @@
 # Production RAG at Scale
 
-Production RAG is no longer a weekend project. It is a distributed system with retrieval pipelines, caching layers, routing logic, self-correction loops, multi-tenant isolation, and cost controls, all operating under strict latency SLAs. When RAG fails in production, the failure is in retrieval roughly 73% of the time, not generation, so the enterprise deployments that succeed treat the knowledge source (not the model) as the primary investment.
+Production RAG is no longer a weekend project. It is a distributed system with retrieval pipelines, caching layers, routing logic, self-correction loops, multi-tenant isolation, and cost controls, all operating under strict latency SLAs. When RAG fails in production, the cause is usually upstream of the model: the right passage was never chunked cleanly, indexed, or retrieved, so the generator never saw it. That is why the enterprise deployments that succeed treat the knowledge source (not the model) as the primary investment.
 
 ## Table of Contents
 
@@ -938,9 +938,9 @@ Production RAG systems have compounding failure probabilities. With 95% reliabil
 +------------------------------------------------------------------+
 ```
 
-### The 80% Rule of Chunking
+### Many Retrieval Failures Are Chunking Failures
 
-An estimated 80% of RAG quality issues trace back to chunking decisions, not retrieval or generation. Common chunking failures:
+The retriever can only return chunks the chunker created. A fact split across two chunks, or a chunk stripped of the section header that gave it meaning, cannot be retrieved however good the embeddings and reranker are. So when the checklist below points at retrieval, inspect the chunks before you swap the embedding model. Common chunking failures:
 
 - **Chunk too small**: Loses context. "It costs $200": what costs $200?
 - **Chunk too large**: Dilutes relevance. A 2000-token chunk where only 1 sentence is relevant.

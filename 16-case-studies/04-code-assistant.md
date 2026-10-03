@@ -266,7 +266,7 @@ class AgenticGeneration:
 
 ### Model Provider Strategy
 
-Enterprise buyers now ask who owns the model behind the assistant, and model suppliers ask who owns the assistant. Cursor became part of SpaceX in August 2026 (a deal reported at about $60 billion in stock), and Grok model launches now appear on Cursor's blog. Two weeks later, on August 28, OpenAI told SpaceX it would wind down its contract supplying OpenAI models to Cursor, with a proposed shutoff of November 12, 2026, and that it would not supply future models, including GPT-6 Astra (which shipped September 3), while Cursor is under SpaceX ownership. A change of ownership is set to take a frontier model family out of a leading coding product on about 11 weeks' notice. That makes **model neutrality a product requirement** in both directions:
+Enterprise buyers now ask who owns the model behind the assistant, and model suppliers ask who owns the assistant. Cursor announced it had become part of SpaceX on August 14, 2026 (a deal reported at about $60 billion in stock), and Grok model launches now appear on Cursor's blog. Two weeks later, on August 28, OpenAI told SpaceX it would wind down its contract supplying OpenAI models to Cursor, with a proposed shutoff of November 12, 2026, and that it would not provide future models to Cursor before then, which rules out GPT-6 Astra (shipped September 3; OpenAI named Astra in the notice). A change of ownership is set to take a frontier model family out of a leading coding product on about 11 weeks' notice. That makes **model neutrality a product requirement** in both directions:
 
 - Route every model call through a gateway with per-tenant model allowlists, so an enterprise can exclude a provider without a code change, and losing a provider is a routing change rather than a rewrite. Keep the eval suite runnable against at least two model families so a forced swap starts from measured quality. The same gateway serves the code-stays-in-VPC tenants: it sends their generation and refactor traffic to models in the tenant's own Bedrock, Google Cloud or Foundry account, or to a self-hosted open-weight model, never to a vendor's public endpoint.
 - Track each provider's data-use and retention terms per tenant. Discounted endpoints that let the vendor use your traffic (Meta's Muse Spark 1.3 contributor tier at $0.10 / $0.20, for example) must be opt-in.
@@ -535,6 +535,8 @@ class CompletionCache:
 - GitHub Copilot Architecture: https://github.blog/
 - Codestral: https://mistral.ai/news/codestral/
 - CodeLlama: https://ai.meta.com/blog/code-llama-large-language-model-coding/
+- OpenAI, "Our decision on Cursor following its acquisition by SpaceX" (August 28, 2026): https://openai.com/index/our-decision-on-cursor-following-its-acquisition-by-spacex
+- Cursor, "Cursor is now a part of SpaceX" (August 14, 2026): https://cursor.com/blog/joining-spacex
 
 ---
 

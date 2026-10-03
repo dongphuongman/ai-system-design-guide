@@ -90,7 +90,7 @@ Three properties make this attractive in production:
 
 The [Pydantic AI evals docs](https://ai.pydantic.dev/evals/) describe a typical loop where the same Pydantic model used for the production schema is used for both the LLM output type and the eval scorer's `expected_output`.
 
-**Structured output on the newest models**: Claude Fable 5.1, Opus 5.5 and Sonnet 5.5 reject forced tool choice, and GPT-6 Astra needs the Responses API for tools. Any framework output mode built on a forced tool call has to adapt, so after a model upgrade, check which output mode your version uses. Pydantic AI's `NativeOutput` marker requests the provider's native JSON-schema output instead of a tool call.
+**Structured output on the newest models**: Claude Fable 5.1, Opus 5.5 and Sonnet 5.5 reject forced tool choice, and GPT-6 Astra needs the Responses API for tools. Any framework output mode built on a forced tool call has to adapt, so after a model upgrade, check which output mode your version uses. Pydantic AI 2.52.0 marks those Claude models with `supports_forced_tool_choice=False`: the forcing it infers for an output tool (as in the sample above) falls back to `auto`, while an explicit `tool_choice='required'` raises a `UserError`. Pydantic AI's `NativeOutput` marker requests the provider's native JSON-schema output instead of a tool call.
 
 ### When Pydantic AI Is the Right Choice
 
@@ -111,7 +111,7 @@ The [Pydantic AI evals docs](https://ai.pydantic.dev/evals/) describe a typical 
 
 ### Current State
 
-[Mastra](https://mastra.ai/) was founded by the team behind Gatsby (graduated YC W25), announced a **$13M seed** led by Lightspeed in October 2025 ([TechCrunch coverage](https://techcrunch.com/2025/10/16/mastra-typescript-agent-framework-seed/)), and **shipped v1.0 on January 20, 2026**. `@mastra/core` reached **1.74.0 on Oct 1, 2026**, with about **28.5K GitHub stars** and about **6.9M npm downloads** from Aug 31 to Sep 29, 2026 ([mastra-ai/mastra](https://github.com/mastra-ai/mastra)).
+[Mastra](https://mastra.ai/) was founded by the team behind Gatsby (graduated YC W25), announced a **$13M seed** from Y Combinator, Paul Graham, Gradient and 120+ other investors on October 8, 2025 ([Mastra announcement](https://mastra.ai/blog/seed-round)), and **shipped v1.0 on January 20, 2026**. `@mastra/core` reached **1.74.0 on Oct 1, 2026**, with about **28.5K GitHub stars** and about **6.9M npm downloads** from Aug 31 to Sep 29, 2026 ([mastra-ai/mastra](https://github.com/mastra-ai/mastra)).
 
 **License**: Mastra moved from Elastic License v2 to **Apache 2.0** on July 9, 2025. Everything outside `ee/` directories is Apache 2.0; code in `ee/` directories is under the source-available Mastra Enterprise Edition License. Check which packages you import before embedding Mastra in a commercial product.
 
@@ -267,7 +267,7 @@ Three things. First, **fewer bad inputs leak through**. The LLM-facing schema is
 - Mastra repository: https://github.com/mastra-ai/mastra
 - Mastra blog, license change from ELv2 to Apache 2.0 (Jul 2025): https://mastra.ai/blog/apache-license
 - Mastra documentation: https://mastra.ai/
-- TechCrunch, "Mastra raises $13M seed for TypeScript agent framework" (October 2025): https://techcrunch.com/2025/10/16/mastra-typescript-agent-framework-seed/
+- Mastra. "Announcing our $13m seed round from YC, pg, Gradient, Amjad, Guillermo, Balaji, and 120+ others" (Oct 8, 2025): https://mastra.ai/blog/seed-round
 - Generative.inc Mastra guide: https://generative.inc/blog/mastra-typescript-agent-framework
 - LangGraph 1.x docs: https://docs.langchain.com/oss/python/langgraph/
 - LangChain "Built with LangGraph" customer list: https://www.langchain.com/built-with-langgraph

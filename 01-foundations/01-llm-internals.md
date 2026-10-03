@@ -502,6 +502,7 @@ KV cache per token (BF16, standard MHA/GQA attention):
 - Same shape with full MHA (64 KV heads): 2.6 MB per token, ~21 GB at 8K
 - MLA, sliding-window, linear-attention hybrids and compressed KV break
   this formula: DeepSeek V4.1-Flash reports 890 bytes of global KV per token
+  (its sliding-window KV is extra, capped at the window length)
 ```
 
 ### Compute Requirements

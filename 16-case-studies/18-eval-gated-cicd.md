@@ -10,11 +10,11 @@ Constraints:
 
 - 28 engineers across 4 teams; about 50 PRs per week touch the AI surface
 - Customers in regulated industries refuse to accept regression on their domain-specific queries
-- Per-PR eval budget: under $40 of model spend; total eval budget: under $15K per month
+- Per-PR eval budget: under $40 of model spend; total eval budget: about $15K per month
 - p95 PR-to-merge time goal: under 90 minutes including eval
 - Quarterly auditor signoff on the eval methodology
 
-Eval-gated CI is no longer a nice-to-have. Hamel Husain's [eval blog series](https://hamel.dev/blog/posts/evals/), Eugene Yan's writings ([evals](https://eugeneyan.com/writing/evals/)), and the [judgy library](https://github.com/ai-evaluation/judgy) for statistical correction have all converged on a playbook. Phoenix, Langfuse, Braintrust, and Galileo all ship CI integrations. The question is no longer "should we do this" but "how do we do this without doubling cycle time."
+Eval-gated CI is no longer a nice-to-have. Hamel Husain's [eval blog series](https://hamel.dev/blog/posts/evals/), Eugene Yan's writings ([evals](https://eugeneyan.com/writing/evals/)), and the [judgy library](https://github.com/ai-evals-course/judgy) for statistical correction have all converged on a playbook. Phoenix, Langfuse, Braintrust, and Galileo (now Splunk Agent Observability, after Cisco's acquisition) all support running evals from CI. The question is no longer "should we do this" but "how do we do this without doubling cycle time."
 
 The tooling underneath churns, so own the assets. OpenAI's hosted Evals goes read-only on October 31, 2026 and shuts down November 30 (OpenAI points users to Promptfoo, the open-source tool it agreed to acquire in March), and Dynatrace agreed in August to buy Arize, Phoenix's developer. Golden sets, judge prompts, and calibration labels live in our repo, so the runner is replaceable in a sprint.
 
@@ -56,7 +56,7 @@ flowchart TB
 | Golden sets | YAML in repo, 1,200 to 4,000 cases per surface | Stable test base |
 | Code evaluators | Pytest with custom assertions | Cheap, deterministic checks |
 | LLM judges | Claude Sonnet 5.5 (pinned ID and effort), GPT-6 Sol as the calibrated backup | Subjective quality |
-| Statistical correction | [judgy](https://github.com/ai-evaluation/judgy) | Convert judge scores to estimates with CIs |
+| Statistical correction | [judgy](https://github.com/ai-evals-course/judgy) | Convert judge scores to estimates with CIs |
 | Pipeline | GitHub Actions plus custom runner | CI orchestration |
 | Trace store | Langfuse | Per-PR observability |
 | Annotation | Argilla self-hosted | Human re-labeling for judge calibration |
@@ -79,7 +79,7 @@ Sizing: 1,200 cases per surface is the floor; below this, the corrected-score CI
 
 ### 2. Train/dev/test split for the judge
 
-The LLM judge is itself a model with prompt parameters and few-shot examples. We treat the judge prompt as a model and apply train/dev/test discipline: 60 percent of human-labeled cases tune the judge prompt, 20 percent select the best prompt variant, 20 percent are a hold-out we only consult before a major judge-prompt change. This pattern is the core of the [judgy methodology](https://github.com/ai-evaluation/judgy) and Hamel's eval posts.
+The LLM judge is itself a model with prompt parameters and few-shot examples. We treat the judge prompt as a model and apply train/dev/test discipline: 60 percent of human-labeled cases tune the judge prompt, 20 percent select the best prompt variant, 20 percent are a hold-out we only consult before a major judge-prompt change. This pattern is the core of the [judgy methodology](https://github.com/ai-evals-course/judgy) and Hamel's eval posts.
 
 Re-calibration cadence: every 30 days, 50 fresh cases get re-labeled by 2 humans (Cohen's kappa over 0.7 required); if the judge's accuracy on dev set drops below 80 percent, we re-tune.
 
@@ -87,7 +87,7 @@ Re-calibration cadence: every 30 days, 50 fresh cases get re-labeled by 2 humans
 
 Naive LLM-as-judge accuracy on subjective categories is around 75 to 88 percent in our domain. A raw judge score is biased. `judgy` computes a corrected estimate of the true pass rate using the judge's confusion matrix on the held-out set, and returns a confidence interval. We gate on the lower bound of the CI being within tolerance. This means we never block a PR on judge noise alone, and we never approve a regression that the judge merely failed to catch.
 
-The math: the correction uses the judge's true positive rate (it passes a good answer) and true negative rate (it fails a bad one), estimated on the held-out set: corrected = (observed + TNR - 1) / (TPR + TNR - 1). If the judge has a 99 percent TPR but only a 75 percent TNR (it rarely fails a good answer but passes a quarter of the bad ones), a judge-reported 89 percent pass rate corrects to about 86.5 percent, with a 95 percent CI of roughly 82 to 91 percent. Lenient judges inflate pass rates; the correction takes that back out. We allow merge if the CI lower bound is at most 2 points below `main`. ([Reference: judgy README math](https://github.com/ai-evaluation/judgy#statistical-correction)).
+The math: the correction uses the judge's true positive rate (it passes a good answer) and true negative rate (it fails a bad one), estimated on the held-out set: corrected = (observed + TNR - 1) / (TPR + TNR - 1). If the judge has a 99 percent TPR but only a 75 percent TNR (it rarely fails a good answer but passes a quarter of the bad ones), a judge-reported 89 percent pass rate corrects to about 86.5 percent, with a 95 percent CI of roughly 82 to 91 percent. Lenient judges inflate pass rates; the correction takes that back out. We allow merge if the CI lower bound is at most 2 points below `main`. ([Reference: judgy README math](https://github.com/ai-evals-course/judgy#how-it-works)).
 
 ### 4. Failure-mode taxonomy as the assertion surface
 
@@ -167,7 +167,7 @@ Stratified sampling: we ensure each PR's 10-percent sample includes at least 1 c
 
 ### F4: Cost overrun from accidental full-runs
 
-A `full-eval` label on every PR triples cost. Mitigation: the label requires an approval from a CODEOWNERS file; an automated reminder pings whoever applies it. We also cap monthly eval spend with a hard ceiling at $16K (about 15 percent above plan) and refuse to start a job that would exceed it.
+A `full-eval` label on every PR triples cost. Mitigation: the label requires an approval from a CODEOWNERS file; an automated reminder pings whoever applies it. We also cap monthly eval spend with a hard ceiling at $17K (about 13 percent above plan) and refuse to start a job that would exceed it.
 
 ### F5: Block-rate too high; developers learn to ignore
 
@@ -208,7 +208,7 @@ At 50 PRs per week:
 - Full-eval runs (about 8 per week): $100 each; $800 per week
 - Nightly cron: $200 each; $1,400 per week
 - Judge re-calibration: $50 per month
-- Total: about $14K per month
+- Total: about $3,450 per week, or about $15K per month
 
 This pays for itself with one prevented regression. Our post-incident estimate of the $4M renewal we lost suggests this is well-bounded by even one save per year.
 
@@ -248,11 +248,11 @@ The temptation is to roll all axes into one number and gate on it. We do not. A 
 - Hamel Husain, [A field guide to rapidly improving AI products](https://hamel.dev/blog/posts/field-guide/)
 - Eugene Yan, [Evals: Constructed for LLM apps](https://eugeneyan.com/writing/evals/)
 - Eugene Yan, [LLM-as-judge](https://eugeneyan.com/writing/llm-evaluators/)
-- [judgy library](https://github.com/ai-evaluation/judgy)
+- [judgy library](https://github.com/ai-evals-course/judgy)
 - [Phoenix evals](https://docs.arize.com/phoenix/evaluation/concepts-evals)
 - [Langfuse evaluations](https://langfuse.com/docs/scores/overview)
 - [Braintrust](https://www.braintrust.dev/docs)
-- [Galileo evaluate](https://www.rungalileo.io/blog/llm-evaluation)
+- Galileo (now Splunk Agent Observability), [Run experiments in code](https://docs.galileo.ai/sdk-api/experiments/running-experiments)
 - Zheng et al., [Judging LLM-as-a-Judge](https://arxiv.org/abs/2306.05685)
 - [Argilla annotation platform](https://docs.argilla.io/)
 - [pytest-html report integration](https://pytest-html.readthedocs.io/)

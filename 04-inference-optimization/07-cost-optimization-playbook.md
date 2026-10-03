@@ -48,7 +48,7 @@ The most effective cost-saving strategy is to use the **cheapest model capable o
 
 Small open models (IBM Granite 4.2 3B and 8B, Gemma 4 12B, Qwen3.8-27B) and the cheapest API tiers (GPT-6 Luna, Claude Haiku 4.5) now match or beat the original GPT-4 from 2023 on most benchmarks.
 - **Use Case**: Entity extraction, sentiment analysis, simple RAG, routing.
-- **Cost**: 100x cheaper to run than frontier models.
+- **Cost**: roughly 10x (Claude Haiku 4.5) to 100x (GPT-6 Luna at $0.10 / $0.50) cheaper per token than the $10 / $50 ceiling tier (Claude Fable 5.1, GPT-6 Astra); self-hosted small models only go lower at high utilization.
 - **Latency**: < 100ms response times for short outputs.
 
 ### The Price Floor: GPT-6 Luna and DeepSeek V4.1-Flash

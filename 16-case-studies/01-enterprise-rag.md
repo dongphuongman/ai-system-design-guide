@@ -424,12 +424,13 @@ import anthropic
 
 class LongContextGenerator:
     """
-    Claude Sonnet 5.5 over whole document sections. Documents go before the
-    question so follow-up questions over the same documents hit the prompt
-    cache (reads bill at $0.20 per 1M on Sonnet 5.5, 0.1x the input price).
+    Claude Sonnet 5.5 over whole document sections. Documents sit in the
+    system prompt, ahead of the conversation, so follow-up questions over the
+    same documents hit the prompt cache (reads bill at $0.20 per 1M on
+    Sonnet 5.5, 0.1x the input price).
     """
     def __init__(self):
-        # Use AnthropicBedrockMantle, AnthropicVertex or AnthropicFoundry
+        # Use AsyncAnthropicBedrockMantle, AsyncAnthropicVertex or AsyncAnthropicFoundry
         # instead to keep traffic on a private cloud endpoint
         self.client = anthropic.AsyncAnthropic()
 
@@ -439,7 +440,7 @@ class LongContextGenerator:
         context_docs: list[Document],
         conversation_history: list[dict] | None = None
     ) -> str:
-        system = (
+        instructions = (
             "You are an enterprise knowledge assistant. "
             "Answer only from the provided documents. "
             "Cite every claim using [[DocName:PageNumber]] format."
@@ -455,11 +456,13 @@ class LongContextGenerator:
         response = await self.client.messages.create(
             model="claude-sonnet-5-5",
             max_tokens=4096,
-            system=system,
+            system=[{"type": "text", "text": instructions}, *doc_blocks],
             output_config={"effort": "medium"},
             messages=[
+                # History holds only prior questions and answers, never the documents,
+                # so the cached system-plus-documents prefix stays byte-identical
                 *(conversation_history or []),
-                {"role": "user", "content": [*doc_blocks, {"type": "text", "text": f"Question: {query}"}]},
+                {"role": "user", "content": f"Question: {query}"},
             ],
         )
         # Adaptive thinking is on by default, so keep only the text blocks
@@ -550,7 +553,7 @@ class QueryCache:
 | Component | Calculation | Monthly Cost |
 |-----------|-------------|--------------|
 | LLM (Claude Sonnet 5.5, US-only processing at 1.1x) | 1.5M queries × (2K input tokens × $2.20/1M + 500 output tokens × $11/1M) | ~$14,850 |
-| Embeddings | ~75M query tokens plus re-embedding ~2% of the corpus daily (~1.5B tokens) at $0.13/1M | ~$200 |
+| Embeddings | ~75M query tokens plus re-embedding ~2% of the corpus daily (~50M tokens a day, ~1.5B a month) at $0.13/1M | ~$200 |
 | Reranking (Voyage rerank-3) | 1.5M queries × 50 candidates × ~400 tokens × $0.05/1M | ~$1,500 |
 | Vector DB (Qdrant) | 3-node cluster | ~$1,500 |
 | Elasticsearch | 3-node cluster | ~$2,000 |

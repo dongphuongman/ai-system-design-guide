@@ -15,7 +15,7 @@ OpenClaw is an **open-source, self-hosted personal AI agent** that executes task
 - [Performance Optimization and Scaling](#performance-optimization-and-scaling)
 - [Real-World Use Cases](#real-world-use-cases)
 - [Limitations and When NOT to Use OpenClaw](#limitations-and-when-not-to-use-openclaw)
-- [The April 2026 Anthropic Block-and-Reverse Incident](#the-april-2026-anthropic-block-and-reverse-incident)
+- [The 2026 Anthropic Subscription-Policy Incident](#the-2026-anthropic-subscription-policy-incident)
 - [Comparison with Alternatives](#comparison-with-alternatives)
 - [Getting Started: Quick Setup Guide](#getting-started)
 - [System Design Interview Angle](#system-design-interview-angle)
@@ -31,7 +31,7 @@ OpenClaw is:
 - **Self-hosted**: Runs on your machine, VPS, or Raspberry Pi, so you control your data
 - **Messaging-native**: Lives in chat apps you already use (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Teams, and 20+ others)
 - **LLM-agnostic**: Works with Claude, GPT, Gemini, Muse Spark, DeepSeek, or local models (recent releases added GPT-6.1 Sol, GPT-6 Astra, Fable 5.1 and Muse Spark 1.3)
-- **Skill-extensible**: 100+ pre-configured skills, with a simple format for writing custom ones
+- **Skill-extensible**: About 50 bundled skills (bundled plugins ship more), a public registry (ClawHub), and a simple format for writing custom ones
 - **Open source**: MIT-licensed, with about 391K GitHub stars and 82K forks on October 1, 2026
 - **Foundation-governed**: Stewarded by the OpenClaw Foundation, an independent 501(c)(3) that employs the core team and signs releases. There is no paid tier, hosted service or token, and the README says OpenAI is "a donor, not an owner" (Amazon, Red Hat, NVIDIA and GitHub are among the other donors and infrastructure supporters)
 - **Two release trains**: Calendar-versioned builds (2026.9.7 on September 30, 2026) and gateway-only extended-stable builds that the project treats as its LTS line (2026.8.35 on October 2). Pin production gateways to the extended-stable train
@@ -761,38 +761,34 @@ When a new client signs on, an agent kicks off a full workflow: creates a projec
 
 ---
 
-## The April 2026 Anthropic Block-and-Reverse Incident
+## The 2026 Anthropic Subscription-Policy Incident
 
-OpenClaw's reliance on Claude Pro and Claude Max subscriptions to power agent work was, until April 2026, treated as a cost-control feature: users could run OpenClaw against their existing personal Claude plan instead of paying API rates. On April 4, 2026, Anthropic changed the policy. A new enforcement clause blocked third-party agent frameworks from acting as a programmatic intermediary for Pro and Max subscriptions. Within hours, OpenClaw instances pointed at Pro and Max accounts began returning errors. Roughly 135,000 active OpenClaw deployments were affected, and a sizeable fraction of those users moved to direct API billing at rates 5x or more above their previous effective cost. Community frustration trended on Hacker News and X for nearly two weeks.
+OpenClaw's reliance on Claude Pro and Claude Max subscriptions to power agent work was, until April 2026, treated as a cost-control feature: users could run OpenClaw against their existing personal Claude plan instead of paying API rates. Starting April 4, 2026, Anthropic stopped letting subscription usage limits cover third-party harnesses such as OpenClaw. That usage could continue only as pay-as-you-go extra usage billed at API rates, and Anthropic tied the change to capacity, pointing at third-party tools that bypassed prompt caching. For heavy agent workloads the effective price jumped several-fold: press estimates put the subscription discount for that kind of usage at 5x or more against API rates.
 
-Anthropic reversed the policy mid-April with a new product called Agent SDK Credit, a metered allowance bundled into Pro and Max plans (with a higher allowance for Max) explicitly authorized for programmatic agent use through the Anthropic Agent SDK. Frameworks integrating with the Agent SDK, including OpenClaw, can again drive a personal subscription, but now within a transparent quota and only over the Agent SDK path. Direct Claude.ai web-session scraping remains forbidden.
+The promised reversal is still unsettled. On May 13, Anthropic announced a monthly Agent SDK credit, due June 15, for programmatic use: $20 on Pro, $100 on Max 5x and $200 on Max 20x, covering the Agent SDK, `claude -p`, Claude Code GitHub Actions and third-party apps that authenticate through the Agent SDK, with usage beyond the credit billed at API rates only when extra usage is enabled. On June 15, the day it was due, Anthropic paused the plan. Its help center, last updated June 16, says Agent SDK, `claude -p` and third-party app usage still draw from the subscription's usage limits. OpenClaw's own Anthropic provider docs say the credit is unavailable while Anthropic revises it. In practice OpenClaw reaches a Pro or Max plan through Claude Code's own credentials, either the Claude CLI backend or a `claude setup-token` token, and that usage draws on the plan's limits; for shared production automation, OpenClaw's docs recommend an Anthropic API key with pay-as-you-go billing.
 
 ### Timeline of the Incident
 
 ```mermaid
 gantt
-    title April 2026 Anthropic OpenClaw incident
+    title Anthropic subscription policy and OpenClaw in 2026
     dateFormat  YYYY-MM-DD
     axisFormat  %b %d
     section Policy actions
-    Block on Pro Max programmatic use      :done, a1, 2026-04-04, 1d
-    Community backlash and migration       :active, a2, 2026-04-05, 13d
-    Agent SDK Credit announcement          :crit, a3, 2026-04-18, 1d
-    Agent SDK Credit GA rollout            :a4, 2026-04-21, 9d
-    section User behavior
-    Mass move to direct API billing        :b1, 2026-04-05, 13d
-    Self-host and multi-provider migration :b2, 2026-04-07, 25d
+    Subscriptions stop covering third-party harnesses :milestone, a1, 2026-04-04, 0d
+    Agent SDK credit announced                        :milestone, a2, 2026-05-13, 0d
+    Credit plan paused on its start date              :milestone, a3, 2026-06-15, 0d
 ```
 
 ### What It Means Architecturally
 
 The incident was not a security event. It was a product-policy event with security and reliability consequences. Three lessons follow:
 
-**Provider policy is part of your architecture.** A single line in a vendor's Acceptable Use enforcement is functionally identical, from an availability standpoint, to a service outage that lasts however long the policy stays in force. If your agent platform's economics depend on a specific provider plan, the provider's policy team is on your critical path. Treat their Terms of Service as a runtime dependency, not a legal artifact.
+**Provider policy is part of your architecture.** Within ten weeks, Anthropic changed what subscriptions cover for third-party harnesses, announced a replacement scheme, and paused that scheme on its start date. If your agent platform's economics depend on a specific provider plan, a change to what that plan covers is a price shock overnight, and requests simply stop if no fallback billing is enabled. The provider's policy team is on your critical path. Treat their Terms of Service as a runtime dependency, not a legal artifact.
 
-**Multi-provider abstraction is operational hygiene, not optimization.** OpenClaw users who had configured both Anthropic and OpenAI providers, with model routing rules per agent, kept working through the block at degraded quality. Users who had hard-coded a single provider in every agent definition were dead in the water. The abstraction layer is cheap to build and the failure mode it covers is real. Ordinary outages make the same point: Anthropic logged at least 12 major or critical incidents between August 16 and September 29, 2026, and OpenAI had an outage of about 5 hours 20 minutes across the API, ChatGPT and Codex on September 29. A fallback that stays inside one vendor does not cover either.
+**Multi-provider abstraction is operational hygiene, not optimization.** OpenClaw users with a second provider configured per agent could reroute when the Claude economics changed. Users who had hard-coded a single provider in every agent definition could only pay the new rate or stop. The abstraction layer is cheap to build and the failure mode it covers is real. Ordinary outages make the same point: Anthropic logged at least 12 major or critical incidents between August 16 and September 29, 2026, and OpenAI had an outage of about 5 hours 20 minutes across the API, ChatGPT and Codex on September 29. A fallback that stays inside one vendor does not cover either.
 
-**Self-host backstops matter for personal-data agents.** A meaningful subset of OpenClaw deployments switched their default agent over to a local Ollama model (Llama 3.3 70B was the most common choice) for two weeks, accepting lower quality for guaranteed availability. The lesson is not that local models are competitive with frontier models; it is that having a working fallback path, even at degraded quality, is part of a serious deployment.
+**Self-host backstops matter for personal-data agents.** Keep at least one fallback path that no vendor's plan terms can switch off, such as a local model served through Ollama or vLLM, and accept lower quality on that path in exchange for availability. The lesson is not that local models are competitive with frontier models; it is that having a working fallback path, even at degraded quality, is part of a serious deployment.
 
 ### Vendor-Risk Checklist
 
@@ -805,7 +801,9 @@ The incident was not a security event. It was a product-policy event with securi
 
 **Sources:**
 - [Axios: Anthropic blocks OpenClaw third-party agents](https://www.axios.com/2026/04/06/anthropic-openclaw-subscription-openai)
-- [VentureBeat: OpenClaw reversal with Agent SDK credit](https://venturebeat.com/technology/anthropic-reinstates-openclaw-and-third-party-agent-usage-on-claude-subscriptions-with-a-catch)
+- [VentureBeat: Agent SDK credit announcement (May 13, 2026)](https://venturebeat.com/technology/anthropic-reinstates-openclaw-and-third-party-agent-usage-on-claude-subscriptions-with-a-catch)
+- [Claude Help Center: Use the Claude Agent SDK with your Claude plan (pause notice, June 15, 2026)](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
+- [OpenClaw docs: Anthropic provider](https://docs.openclaw.ai/providers/anthropic)
 
 ---
 
@@ -816,9 +814,9 @@ The incident was not a security event. It was a product-policy event with securi
 | **Primary interface** | Messaging apps | Messaging apps | Terminal/CLI | Terminal/CLI |
 | **Architecture** | Gateway + Channel Adapters | Learning loop + Skill memory | Agentic CLI | Codex-derived harness (Rust rewrite, July 2026); the original Python REPL lives on as a community fork |
 | **LLM support** | Any (Claude, GPT, Gemini, local) | Any | Claude only | Any; tuned for low-cost open models |
-| **Messaging platforms** | 20+ (WhatsApp, Telegram, Slack, etc.) | 6 (Telegram, Discord, Slack, WhatsApp, Signal, email) plus the CLI, from one gateway process | None (terminal only) | None (terminal only) |
-| **Memory** | Cross-session per assistant | Multi-level (session, persistent, skill) | Session only (CLAUDE.md for context) | Session only |
-| **Skills/Plugins** | 100+ bundled, community ecosystem | Self-learning skill system | MCP tools, skills, plugins | Skills (for example a QA skill for browser and app testing) |
+| **Messaging platforms** | 20+ (WhatsApp, Telegram, Slack, etc.) | 6 (Telegram, Discord, Slack, WhatsApp, Signal, email) plus the CLI, from one gateway process | Terminal first; Telegram, Discord and iMessage through channels (research preview), and Slack through Claude in Slack | None (terminal only) |
+| **Memory** | Cross-session per assistant | Multi-level (session, persistent, skill) | CLAUDE.md you write plus auto memory Claude writes per repository (on by default in local sessions) | Session only |
+| **Skills/Plugins** | ~50 bundled plus plugin-shipped skills; ClawHub registry | Self-learning skill system | MCP tools, skills, plugins | Skills (for example a QA skill for browser and app testing) |
 | **Self-hosted** | Yes (required) | Yes (required) | Runs locally; models hosted by Anthropic or a cloud provider; self-hosted runners for Team and Enterprise | Yes |
 | **GitHub stars (Oct 2026)** | ~391K | ~251K | ~149K (issues and plugins repo; not open source) | ~68K |
 | **Best for** | Multi-channel personal AI assistant | Personal agent that learns over time | Software development | Coding with low-cost models |

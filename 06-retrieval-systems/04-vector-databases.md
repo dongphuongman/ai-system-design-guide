@@ -118,9 +118,9 @@ Layer 0:   ********************  (all vectors)
 - Supports updates natively
 
 **Cons:**
-- Memory-intensive (graph structure)
-- Index size: ~1.5-2x vector data
-- 10M vectors at 1536 dims require ~80GB of RAM
+- Memory-intensive: the full-precision vectors and the graph links both live in RAM
+- The graph itself is a small share at high dimensions. OpenSearch's sizing rule is 1.1 x (4 x dims + 8 x M) bytes per vector, about 12-19% above the raw float32 vectors at 1,536 dims for M of 16 to 64; low-dimensional vectors pay proportionally more
+- 10M vectors at 1,536 dims need ~70-75 GB of RAM per copy (61 GB of that is the float32 vectors), before replicas
 
 **Key parameters:**
 - `M`: Max connections per node (16-64)
@@ -129,10 +129,10 @@ Layer 0:   ********************  (all vectors)
 
 ### DiskANN (SSD-based)
 
-The industry standard for **petabyte-scale** search.
+Built for **billion-scale** indexes that do not fit in RAM. The original paper served a billion SIFT points from one workstation with 64 GB of RAM and an SSD, at over 5,000 queries per second, under 3 ms mean latency and 95%+ 1-recall@1.
 
 **How it works:**
-- Keeps the graph on SSD (NVMe) and only a tiny index in RAM
+- Keeps the full-precision vectors and the graph on SSD (NVMe), with only compressed (PQ) codes in RAM to steer the search
 - Uses the Vamana algorithm for efficient disk-based graph traversal
 
 **Pros:**
@@ -143,7 +143,7 @@ The industry standard for **petabyte-scale** search.
 - Slightly higher latency than pure in-memory HNSW
 - Tail latency depends on NVMe IOPS, so size SSDs for query concurrency, not just capacity
 
-**Example:** A 100-million-vector index with 1536 dimensions would require nearly 1TB of RAM for HNSW. Using DiskANN, the RAM requirement drops by 90-95% while maintaining sub-10ms query times.
+**Example:** A 100-million-vector index with 1,536 dimensions needs roughly 700 GB of RAM per copy for HNSW (614 GB of float32 vectors plus graph and overhead). Using DiskANN, the RAM requirement drops by 90-95% while maintaining sub-10ms query times.
 
 ### IVF (Inverted File Index)
 
@@ -674,7 +674,7 @@ HNSW builds a hierarchical graph of vectors:
 
 **When not to use:**
 - Very small datasets (<10K): brute force is fine
-- Extremely memory constrained: HNSW uses 1.5-2x vector size for graph
+- Extremely memory constrained: HNSW keeps every full-precision vector plus its graph links in RAM
 - Need exact search: HNSW is approximate
 - Heavy update workload with tight latency: updates can cause temporary degradation
 
@@ -687,7 +687,7 @@ Alternatives:
 ### Q: When would you use a Disk-based index (like DiskANN) over a RAM-based index (HNSW)?
 
 **Strong answer:**
-I would use a Disk-based index when the memory cost of the index exceeds the budget or the capacity of a single high-memory node. For example, a 100-million-vector index with 1536 dimensions would require nearly 1TB of RAM for HNSW. Using DiskANN, I can store the majority of that 1TB on NVMe SSDs, reducing the RAM requirement by 90-95% while maintaining sub-10ms query times. This represents a massive TCO (Total Cost of Ownership) reduction for any workload that can absorb a few extra milliseconds per query, which covers most RAG traffic, since the LLM call dominates end-to-end latency.
+I would use a Disk-based index when the memory cost of the index exceeds the budget or the capacity of a single high-memory node. For example, a 100-million-vector index with 1,536 dimensions needs roughly 700 GB of RAM per replica for HNSW (614 GB is the float32 vectors alone). Using DiskANN, I can keep the full vectors and the graph on NVMe SSDs and only compressed codes in RAM, reducing the RAM requirement by 90-95% while maintaining sub-10ms query times. This represents a massive TCO (Total Cost of Ownership) reduction for any workload that can absorb a few extra milliseconds per query, which covers most RAG traffic, since the LLM call dominates end-to-end latency.
 
 ### Q: Why is metadata filtering often the bottleneck in vector databases?
 
@@ -736,6 +736,7 @@ results = index.query(vector=query, namespace=tenant_id)
 
 - Malkov and Yashunin. "Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs" (HNSW, 2018)
 - Subramanya et al. "DiskANN: Fast Accurate Billion-point Nearest Neighbor Search on a Single Node" (Microsoft Research, NeurIPS 2019)
+- [OpenSearch. "k-NN index: HNSW memory estimation"](https://docs.opensearch.org/2.9/search-plugins/knn/knn-index/)
 - Pinecone Documentation: https://docs.pinecone.io/
 - Pinecone. "The Managed Architecture of Serverless Vector DBs" (2024)
 - Qdrant Documentation: https://qdrant.tech/documentation/

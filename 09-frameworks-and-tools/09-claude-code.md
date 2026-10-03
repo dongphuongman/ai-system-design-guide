@@ -496,6 +496,7 @@ I start from where the money goes: coding-agent sessions run at roughly 300 inpu
 - Anthropic. "Claude Opus 5.5: built for coding sessions that use more context" (Sep 2026): https://claude.com/blog/claude-opus-5-5-built-for-coding-sessions-that-use-more-context
 - Rehberger, J. "Breaking Claude Code Opus 5 Auto Mode" (Aug 2026): https://embracethered.com/blog/posts/2026/breaking-claude-code-opus-5-and-automode/
 - Terminal-Bench leaderboard: https://www.tbench.ai/
+- Terminal-Bench. "Terminal-Bench 4.0" (Aug 28, 2026; removes 8 of 3.0's 74 tasks): https://www.tbench.ai/news/terminal-bench-4-0
 
 ---
 

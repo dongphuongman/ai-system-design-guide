@@ -181,10 +181,9 @@ A Property Graph combines the **Semantic flexibility** of vectors with the **Str
 ---
 
 ## References
-- LlamaIndex. "The Workflows Framework: Event-Driven Agents" (2025)
+- LlamaIndex. "Announcing Workflows 1.0: A Lightweight Framework for Agentic systems" (Jun 30, 2025): https://www.llamaindex.ai/blog/announcing-workflows-1-0-a-lightweight-framework-for-agentic-systems
 - `llama_index` README focus note (PR #23020, Sep 11, 2026): https://github.com/run-llama/llama_index
-- Jerry Liu. "Data-Centric AI in the LLM Era" (2024/2025)
-- LlamaHub. "The Repository of 1000+ Data Loaders" (2025)
+- LlamaIndex. Integrations directory (LlamaHub has moved here): https://developers.llamaindex.ai/python/framework/community/integrations
 
 ---
 

@@ -111,8 +111,9 @@ The cost is one LLM call per chunk at ingestion (cheap with prompt caching of th
 - [Günther et al. "Late Chunking: Contextual Chunk Embeddings Using Long-Context Embedding Models" (2024)](https://arxiv.org/abs/2409.04701)
 - [Voyage AI. "voyage-context-4" (June 2026)](https://blog.voyageai.com/2026/06/29/voyage-context-4/)
 - [MinerU 4.0 release notes (Sep 2026)](https://github.com/opendatalab/MinerU/releases/tag/mineru-4.0.0-released)
-- LlamaIndex. "Advanced Chunking Strategies for RAG" (2025)
-- LangChain. "RecursiveCharacterTextSplitter Benchmarks" (2024)
+- [Smith and Troynikov. "Evaluating Chunking Strategies for Retrieval" (Chroma, July 2024)](https://www.trychroma.com/research/evaluating-chunking)
+- [LangChain. "Text splitter integrations" (docs)](https://docs.langchain.com/oss/python/integrations/splitters)
+- [LlamaIndex. "Node Parser Modules" (docs, semantic and hierarchical parsers)](https://developers.llamaindex.ai/python/framework/module_guides/loading/node_parsers/modules/)
 
 ---
 

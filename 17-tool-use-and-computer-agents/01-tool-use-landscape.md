@@ -211,7 +211,7 @@ Earlier releases also used `HEARTBEAT.md` for scheduled autonomous actions. Curr
 
 ### Security Concerns
 
-OpenClaw's rapid growth has outpaced security practices. As of May 2026, over 135,000 instances were exposed on the public internet, many with default configurations. The ClawHub skills marketplace has minimal security oversight: skills are Markdown with optional TypeScript, easy to create and install, and easy to abuse. Tools for the main session run directly on the host unless you configure sandboxing (sandbox mode defaults to `off`). This is a critical design consideration for anyone deploying OpenClaw in production; `openclaw security audit` reports where a deployment has drifted from the safe defaults.
+OpenClaw's rapid growth has outpaced security practices. In February 2026, SecurityScorecard's STRIKE team counted more than 135,000 instances exposed on the public internet, many with default configurations. The ClawHub skills marketplace has minimal security oversight: skills are Markdown with optional TypeScript, easy to create and install, and easy to abuse. Tools for the main session run directly on the host unless you configure sandboxing (sandbox mode defaults to `off`). This is a critical design consideration for anyone deploying OpenClaw in production; `openclaw security audit` reports where a deployment has drifted from the safe defaults.
 
 ---
 
@@ -219,51 +219,53 @@ OpenClaw's rapid growth has outpaced security practices. As of May 2026, over 13
 
 ### What It Is
 
-OpenHands (formerly OpenDevin) is an open-source autonomous AI software engineer. Licensed under MIT, it can modify code, execute commands, browse the web, and interact with APIs. Unlike tools that suggest code snippets, OpenHands clones repositories, runs terminal commands, executes tests, and debugs errors inside sandboxed Docker containers.
+OpenHands (formerly OpenDevin) is an open-source autonomous AI software engineer. Licensed under MIT, it can modify code, execute commands, browse the web, and interact with APIs. Unlike tools that suggest code snippets, OpenHands clones repositories, runs terminal commands, executes tests, and debugs errors inside a sandboxed runtime, typically a Docker container.
 
-### Architecture: Event-Stream + Sandboxed Runtime
+### Architecture of the v1.x OpenHands Agent (pre-Agent Canvas)
+
+This is the agent runtime as it shipped before Agent Canvas; the current packaging is summarized at the end of this section.
 
 ```
 +-------------------------------------------------------------------+
-|                     OpenHands Architecture                        |
+|              OpenHands v1.x Agent (pre-Agent Canvas)              |
 +-------------------------------------------------------------------+
 |                                                                   |
-|  +------------------+                                             |
-|  |   User / API     |                                             |
-|  +--------+---------+                                             |
+|  +-------------------+                                            |
+|  |    User / API     |                                            |
+|  +--------+----------+                                            |
 |           |                                                       |
 |           v                                                       |
-|  +--------+---------+     +------------------+                    |
+|  +--------+----------+     +------------------+                   |
 |  |  Agent Controller |<--->|  Event Stream    |                   |
-|  |  (CodeAct 1.0)   |     |  Hub             |                   |
-|  +--------+---------+     +--------+---------+                    |
-|           |                        |                              |
-|           v                        v                              |
-|  +--------+---------+     +--------+---------+                    |
+|  |  (CodeActAgent)   |     |  Hub             |                   |
+|  +--------+----------+     +--------+---------+                   |
+|           |                         |                             |
+|           v                         v                             |
+|  +--------+----------+     +--------+---------+                   |
 |  |  Action Dispatch  |     |  Observation     |                   |
 |  |                   |     |  Collector       |                   |
 |  |  - CmdRunAction   |     |                  |                   |
 |  |  - FileWriteAction|     |  - CmdOutput     |                   |
 |  |  - BrowseURLAction|     |  - FileContent   |                   |
 |  |  - CodeAction     |     |  - BrowserState  |                   |
-|  +--------+---------+     +------------------+                    |
+|  +--------+----------+     +------------------+                   |
 |           |                                                       |
 |           v                                                       |
 |  +--------+--------------------------------------------------+    |
-|  |              Docker Sandbox (Per Session)                 |    |
+|  |                Docker Sandbox (Per Session)               |    |
 |  |                                                           |    |
-|  |  +----------+  +----------+  +----------+                |    |
-|  |  | Terminal  |  |  Python  |  | Browser  |                |    |
-|  |  | (bash)   |  | (stateful)|  | (BrowserGym)             |    |
-|  |  +----------+  +----------+  +----------+                |    |
+|  |  +--------------+  +--------------+  +--------------+     |    |
+|  |  | Terminal     |  | Python       |  | Browser      |     |    |
+|  |  | (bash)       |  | (stateful)   |  | (BrowserGym) |     |    |
+|  |  +--------------+  +--------------+  +--------------+     |    |
 |  +-----------------------------------------------------------+    |
 +-------------------------------------------------------------------+
 ```
 
-**Key architectural decisions:**
+**Key architectural decisions in the v1.x agent:**
 - **Event-stream architecture**: All agent-environment interactions flow as typed events through a central hub. The Agent analyzes conversation state and produces Actions; the sandbox produces Observations.
 - **Per-session Docker containers**: Each session gets its own isolated container with full OS capabilities. The container is insulated from the host.
-- **CodeAct 1.0**: The default agent template. Embeds LLM reasoning into a unified coding control plane and maintains session-level project context.
+- **CodeAct-style agent**: The agent acts by writing and running bash or Python (the CodeAct approach of executable code as the action space) instead of choosing from a fixed set of JSON tool calls, and maintains session-level project context.
 - **BrowserGym integration**: Agents can conduct browser automation via declarative primitives (DOM manipulation, navigation).
 - **SDK composability**: The OpenHands SDK is a Python library. You can define agents in code, run them locally, or scale to thousands in the cloud.
 
@@ -272,7 +274,7 @@ OpenHands (formerly OpenDevin) is an open-source autonomous AI software engineer
 - Planning Mode beta for multi-step task decomposition
 - 2,100+ contributions from 188+ contributors
 
-The repository has since moved to the `OpenHands` GitHub organization, shipped v1.24.0 on September 25, 2026, and has about 90K stars.
+The repository has since moved to the `OpenHands` GitHub organization and has about 90K stars. Since v1.24.0 (September 25, 2026) OpenHands ships as Agent Canvas, a self-hosted control center that runs the OpenHands agent or any ACP agent (Claude Code, Codex, Gemini) on local, Docker, VM or cloud backends; see the [open coder guide](../09-frameworks-and-tools/10-opencoderguide.md#openhands-formerly-opendevin).
 
 ---
 
@@ -288,35 +290,35 @@ Open Interpreter is a local code execution agent that provides a ChatGPT-like te
 
 ```
 +-------------------------------------------------------------------+
-|                  Open Interpreter Architecture                    |
+|                   Open Interpreter Architecture                   |
 +-------------------------------------------------------------------+
 |                                                                   |
-|  +------------------+                                             |
+|  +-------------------+                                            |
 |  |  Terminal UI      |                                            |
-|  |  (ChatGPT-like)  |                                            |
-|  +--------+---------+                                             |
+|  |  (ChatGPT-like)   |                                            |
+|  +--------+----------+                                            |
 |           |                                                       |
 |           v                                                       |
-|  +--------+---------+     +------------------+                    |
-|  |  Core Engine      |<--->|  LLM Provider   |                   |
-|  |                   |     |  (100+ models)  |                    |
-|  |  - NL to Code     |     |  GPT, Claude,   |                   |
-|  |  - Permission     |     |  Ollama, LM     |                   |
-|  |    Gate            |     |  Studio, etc.   |                   |
-|  +--------+---------+     +------------------+                    |
+|  +--------+----------+     +------------------+                   |
+|  |  Core Engine      |<--->|  LLM Provider    |                   |
+|  |                   |     |  (100+ models)   |                   |
+|  |  - NL to Code     |     |  GPT, Claude,    |                   |
+|  |  - Permission     |     |  Ollama, LM      |                   |
+|  |    Gate           |     |  Studio, etc.    |                   |
+|  +--------+----------+     +------------------+                   |
 |           |                                                       |
 |           v                                                       |
-|  +--------+---------+                                             |
+|  +--------+----------+                                            |
 |  |  Code Executor    |                                            |
 |  |                   |                                            |
 |  |  - Python         |                                            |
 |  |  - JavaScript     |                                            |
 |  |  - Shell/Bash     |                                            |
 |  |  - AppleScript    |                                            |
-|  +--------+---------+                                             |
+|  +--------+----------+                                            |
 |           |                                                       |
 |           v                                                       |
-|  +--------+---------+                                             |
+|  +--------+----------+                                            |
 |  |  Computer API     |                                            |
 |  |  (GUI Control)    |                                            |
 |  |                   |                                            |
@@ -383,7 +385,7 @@ Claude Computer Use is an Anthropic API feature that allows Claude to control a 
 
 ### 2026 Enhancements
 
-- **Batch actions**: Claude can return several `tool_use` blocks in one turn. The executor runs them in order and halts at the first failure, answering each later block with an error ("Not executed: an earlier computer action in this turn failed"). This cuts model round trips, and it moves the human-confirmation gate: Anthropic advises confirming before each batch, because one turn can now complete a multistep consequential action.
+- **Batch actions**: Claude can return several `tool_use` blocks in one turn. The executor runs them in order and halts at the first failure, answering each later block with an error ("Not executed: an earlier computer action in this turn failed"). This cuts model round trips, and it means a confirmation placed between model turns arrives too late, because one turn can now complete a multistep consequential action. Anthropic's docs put the human check before each block runs: inspect the whole batch when it arrives and pause before each consequential action, including one in the middle of a batch.
 - **Zoom Action**: Inspects small UI elements at high resolution before clicking. Reduces misclick rates on dense interfaces. On by default in the GA toolset.
 - **Element refs for browsers**: The browser toolset targets accessibility-tree refs, which survive layout shifts but go stale after navigation. Anthropic scans returned page text and screenshots for prompt injection.
 - **Breaking change**: On the Claude API and Google Cloud, Opus 5.5 and Sonnet 5.5 return HTTP 400 for the older `computer_20251124` tool (Bedrock still accepts it). Code written against the beta tool needs migrating.
@@ -396,7 +398,8 @@ Claude Computer Use is an Anthropic API feature that allows Claude to control a 
 | Date | Benchmark | Score | Key Milestone |
 |------|-----------|-------|---------------|
 | Oct 2024 | OSWorld | 14.9% | Beta launch (Claude 3.5 Sonnet) |
-| Mid 2025 | OSWorld | ~40% | Claude 3.7 improvements |
+| Feb 2025 | OSWorld | 28.0% | Claude 3.7 Sonnet |
+| Mid 2025 | OSWorld | ~42-44% | Claude Sonnet 4 / Opus 4.1 |
 | Q1 2026 | OSWorld-Verified | 72.5% | Sonnet 4.6, Zoom Action |
 | Sep 2026 | OSWorld 2.0 (v2.1 full set, XLANG leaderboard) | 44.33% binary / 77.67% partial | Opus 5, max effort, batched tools |
 | Sep 2026 | OSWorld 2.1 (Anthropic, vendor-reported) | 81.8% partial | Opus 5.5 |
@@ -584,7 +587,7 @@ When asked about tool-use agents in system design interviews, focus on these dim
 
 **5. Failure Handling**: What happens when a tool call fails? Retry? Fallback? Human-in-the-loop? How many retries before giving up?
 
-**6. Hosting Model**: Build your own loop, rent a managed harness, or split the planes? Check residency, retention and identity per option, and who can stop a runaway agent. OpenAI's September 2026 disclosure is the cautionary case: a research agent's DNS-tunnel egress set off an alarm about 12 minutes in, but the run was killed only about 2.5 hours later because the automatic stop failed.
+**6. Hosting Model**: Build your own loop, rent a managed harness, or split the planes? Check residency, retention and identity per option, and who can stop a runaway agent. OpenAI's September 2026 disclosure is the cautionary case: in an internal training run, an agent's DNS-tunnel egress set off an alarm about 12 minutes in, but the run was killed only about 2.5 hours later because the automatic stop failed.
 
 ---
 
@@ -598,7 +601,7 @@ It depends on the use case and security requirements. OpenClaw is optimized for 
 ### Q: How would you design a system that lets non-technical users automate desktop tasks using AI?
 
 **Strong answer:**
-I would use the vision-based computer-use pattern (Claude's computer toolset, Gemini computer use, or similar). The key design decisions: (1) Always run in a sandboxed VM so the agent cannot damage the user's actual machine. (2) Implement a Human-in-the-Loop confirmation step before any destructive action (file deletion, form submission, purchases), and place it before each batch, since one model turn can now emit several actions. Gemini's built-in safety service returning `require_confirmation` for categories like financial transactions and account creation is a ready-made risk taxonomy for that gate. (3) Use zoom and, for browsers, accessibility-tree element refs to reduce misclicks. (4) Set token/cost caps to prevent runaway loops. (5) Record all actions as an audit trail. The main tradeoff is latency (1-3 seconds per model round trip), but this approach works with any application without needing APIs. For higher-speed workflows, combine computer-use with function calling for applications that have APIs.
+I would use the vision-based computer-use pattern (Claude's computer toolset, Gemini computer use, or similar). The key design decisions: (1) Always run in a sandboxed VM so the agent cannot damage the user's actual machine. (2) Implement a Human-in-the-Loop confirmation step before any destructive action (file deletion, form submission, purchases), and run it before each consequential action executes, including one in the middle of a batch, since one model turn can now emit several actions. Gemini's built-in safety service returning `require_confirmation` for categories like financial transactions and account creation is a ready-made risk taxonomy for that gate. (3) Use zoom and, for browsers, accessibility-tree element refs to reduce misclicks. (4) Set token/cost caps to prevent runaway loops. (5) Record all actions as an audit trail. The main tradeoff is latency (1-3 seconds per model round trip), but this approach works with any application without needing APIs. For higher-speed workflows, combine computer-use with function calling for applications that have APIs.
 
 ### Q: Why did OpenClaw grow faster than any open-source project in history? What does this tell you about the market?
 

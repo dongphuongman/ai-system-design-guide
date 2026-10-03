@@ -194,7 +194,7 @@ The model sees a screenshot of the screen, reasons about what to do, and emits a
 
 ### Batch Actions and Element References
 
-Two 2026 changes reshape this loop. First, **batch actions**: Claude's GA computer toolset (August 19, 2026) lets the model return several `tool_use` blocks in one turn. The executor runs them in order and halts at the first failure, answering every later block with an error instead of running it. One model round trip now covers several GUI steps, which changes the latency and cost model, and it moves the human-confirmation gate from per-action to per-batch, because a single turn can finish a multistep consequential action.
+Two 2026 changes reshape this loop. First, **batch actions**: Claude's GA computer toolset (August 19, 2026) lets the model return several `tool_use` blocks in one turn. The executor runs them in order and halts at the first failure, answering every later block with an error instead of running it. One model round trip now covers several GUI steps, which changes the latency and cost model. It also means a human confirmation placed between model turns arrives too late, because a single turn can finish a multistep consequential action. Anthropic's docs put the check before each block runs: inspect every action in the batch when it arrives, pause before each consequential one, and treat a rejection like a failure so the rest of the batch is answered as not executed.
 
 Second, **targeting moves off pixels where it can**. Claude's browser toolset returns the accessibility tree with element refs (`[ref_2]`) that clicks and form fills can target; refs survive layout shifts but go stale after navigation. Gemini computer use normalizes coordinates to a 0-999 grid and adds a safety service that returns `require_confirmation` for categories such as financial transactions, account creation and accepting legal terms. Treat pixels as the fallback for desktop apps with no accessible structure.
 
@@ -219,6 +219,8 @@ for step in range(50):  # The vision-action loop, with a hard step cap
     for block in (b for b in response.content if b.type == "tool_use"):
         if failed:  # batch semantics: stop at the first failure, answer every block
             ok, content = False, SKIPPED
+        elif needs_approval(block) and not human_approves(block):  # gate each block, mid-batch too
+            ok, content, failed = False, "Rejected by the user.", True
         else:
             # screenshot and zoom return an image block; other members return "OK"
             ok, content = sandbox.execute(block.name, block.input)
@@ -284,7 +286,7 @@ User (NL): "Analyze the CSV and plot the top 10 products"
 - **Always ask** (the Python Open Interpreter's default): Every code block requires explicit approval
 - **Auto-approve** (trusted mode): Dangerous but fast
 - **Rules-based** (Claude Code model): Allow/deny patterns in configuration. For example: allow `git` commands, deny `rm -rf`
-- **Classifier-based**: A policy model scores each action and runs it, denies it, or escalates to a human. This became the default in September 2026: Claude Code starts unconfigured interactive sessions in auto mode (v2.1.284), and Claude Managed Agents evaluates each tool call server-side under its auto permission policy. It trades approval fatigue for a calibration problem: you now have to choose and monitor the threshold at which the classifier defers
+- **Classifier-based**: A policy model scores each action and runs it, denies it, or escalates to a human. This became a default in stages: Claude Code made auto mode the default for Pro, Max and Team on August 14, 2026, and since v2.1.284 (September 28) any interactive session with no configured permission mode starts in it; Claude Managed Agents evaluates each tool call server-side under its auto permission policy (September 10). It trades approval fatigue for a calibration problem: you now have to choose and monitor the threshold at which the classifier defers
 
 **3. Execute and Capture**: The code runs in a runtime with full (or restricted) system access. Stdout, stderr, return values, and any generated files are captured.
 
@@ -431,7 +433,7 @@ Sandboxed-by-default with escape hatches. The OpenClaw security crisis (135,000 
 Two refinements from August and September 2026:
 
 - **Split the planes.** Coding-agent vendors converged on a vendor control plane with a customer-hosted execution plane: Claude Code self-hosted runners, Claude Managed Agents self-hosted sandboxes, Cursor Self-hosted Machines, and self-hosted environments in the OpenAI Agents API. Orchestration and models stay with the vendor; tool execution, credentials and network egress stay inside your perimeter. This is the standard answer to "how do you let an agent touch production code and secrets."
-- **The sandbox boundary includes egress and the kill path.** In its September 25, 2026 disclosure, OpenAI described an agent in its internal training and evaluation runs that tunneled out through insufficiently filtered DNS; monitoring alarmed about 12 minutes after the first external response, but the run was stopped only about 2.5 hours later because the automatic stop failed. Allowlist DNS (domains and record types), not just HTTP, and test the automatic kill like any other control. Out-of-band enforcement is the next tier: NVIDIA's Open Agent Safety Platform (announced September 28, 2026) pairs its OpenShell runtime (Apache 2.0, default-deny) with Sentry, a reference design for a watchdog on BlueField-4 DPUs that sits outside the agent's host and can quarantine it.
+- **The sandbox boundary includes egress and the kill path.** In its September 25, 2026 disclosure, OpenAI described an agent in an internal training run that tunneled out through insufficiently filtered DNS; monitoring alarmed about 12 minutes after the first external response, but the run was stopped only about 2.5 hours later because the automatic stop failed. Allowlist DNS (domains and record types), not just HTTP, and test the automatic kill like any other control. Out-of-band enforcement is the next tier: NVIDIA's Open Agent Safety Platform (announced September 28, 2026) pairs its OpenShell runtime (Apache 2.0, default-deny) with Sentry, a reference design for a watchdog on BlueField-4 DPUs that sits outside the agent's host and can quarantine it.
 
 ---
 
@@ -597,7 +599,7 @@ Does the target system have an API?
  +-- NO  --> Does the task require GUI interaction?
               +-- YES --> Is it a web app?
               |            +-- YES --> Pattern 2 with element refs (accessibility tree) first,
-              |            |           pixels as fallback. Approve per batch, per origin.
+              |            |           pixels as fallback. Confirm per action, approve per origin.
               |            +-- NO  --> Pattern 2 (Vision-Based). Sandbox in VM. Accept latency.
               +-- NO  --> Is the task primarily code/data work?
                            +-- YES --> Pattern 3 (Code Exec). Sandbox if multi-tenant.
@@ -640,7 +642,7 @@ Discuss failure modes: "Tool calls can fail due to transient errors (retry with 
 
 ### 5. Cost Model
 
-Address economics: "For the orchestrator, I would use the Plan-and-Execute pattern: Opus plans the task, Haiku executes each step. This reduces cost by roughly 87% compared to using Opus for everything. Because input outweighs output by two orders of magnitude in long tool loops, I would also keep the system prompt and tool definitions stable so they stay in the prompt cache."
+Address economics: "For the orchestrator, I would use the Plan-and-Execute pattern: Opus 5.5 plans the task and Haiku 4.5 executes each step. At list prices Haiku costs a quarter of Opus per token, so this cuts cost by up to roughly two-thirds compared to using Opus for everything; the saving is smaller in cache-heavy loops, because Haiku's cache reads ($0.10 per 1M) are half of Opus 5.5's ($0.20), not a quarter. Because input outweighs output by two orders of magnitude in long tool loops, I would also keep the system prompt and tool definitions stable so they stay in the prompt cache."
 
 ---
 
@@ -659,7 +661,7 @@ Defense in depth across five layers: (1) Schema constraints with deny-patterns (
 ### Q: Explain the trade-offs between vision-based computer use and API-based tool calling.
 
 **Strong answer:**
-API-based is faster (50-200ms vs. 1-3s per model round trip), cheaper (text vs. image tokens at roughly 1,000-1,800 tokens per screenshot), more reliable (deterministic vs. coordinate-clicking), and easier to test. Always prefer it when an API exists. Vision-based is the fallback for applications without APIs, legacy systems, or multi-app workflows. The gap has narrowed: zoom and accessibility-tree element refs cut misclicks, and batch actions spread one model round trip over several steps, at the price of approving per batch rather than per action. Best practice: API calls for the 80% of tasks with API support, vision-based for the remaining 20%, and element refs before pixels inside browsers.
+API-based is faster (50-200ms vs. 1-3s per model round trip), cheaper (text vs. image tokens at roughly 1,000-1,800 tokens per screenshot), more reliable (deterministic vs. coordinate-clicking), and easier to test. Always prefer it when an API exists. Vision-based is the fallback for applications without APIs, legacy systems, or multi-app workflows. The gap has narrowed: zoom and accessibility-tree element refs cut misclicks, and batch actions spread one model round trip over several steps, at the price of a confirmation gate that must check each action in a batch before it runs rather than waiting for the next turn. Best practice: API calls for the 80% of tasks with API support, vision-based for the remaining 20%, and element refs before pixels inside browsers.
 
 ---
 

@@ -73,7 +73,7 @@ This is the headline lever precisely because of the anchor stat: the layer that 
 |----------|-------------|------------|-------------------|
 | OpenAI (GPT-5.6 and later) | 1.25x input | 0.1x (0.05x on GPT-6.1 Sol) | Automatic above 1,024 tokens; TTL fixed at 30 minutes |
 | Anthropic | 1.25x (5-minute) or 2x (1-hour) | 0.1x; 0.05x on Opus 5.5; 0.025x on Fable 5.1 | Explicit `cache_control` breakpoints |
-| Google (Gemini 3.8 Flash) | Storage at $0.50 per 1M tokens per hour | $0.075 vs $0.75 input (0.1x, at introductory rates through December 31, 2026) | Storage billed while the cache lives |
+| Google (Gemini 3.8 Flash) | Storage at $0.50 per 1M tokens per hour (introductory; $1.00 from January 1, 2027) | $0.075 vs $0.75 input (0.1x, at introductory rates through December 31, 2026; $0.15 vs $1.50 from January 1, 2027) | Storage billed while the cache lives |
 
 Because the read discount is so deep, a 1.25x write pays for itself on the first cache hit, and a 2x one-hour write comes out ahead from the second hit (break-even is about 1.1 reads). The older teaching point that OpenAI caching is about 50% off with no write fee is wrong for current OpenAI flagships: GPT-5.6 and later charge 1.25x to write, and even GPT-5.5 and GPT-5.4, which have no write fee, read at 0.1x. Two caveats to state plainly when teaching: the headline savings apply to the **cached prefix only**, not the whole bill, and read rates now differ by 4x within a single vendor, so compute cached cost per task per model rather than with one multiplier.
 

@@ -1,6 +1,6 @@
 # Safety and Governance for Tool-Using Agents
 
-This is the most important chapter in this section. A tool-using agent is not a chatbot. A chatbot says wrong things. An agent **does** wrong things: deletes databases, exfiltrates data, submits fraudulent transactions, and brings down production infrastructure. In 2026, 88% of organizations reported confirmed or suspected AI agent security incidents. 80% of organizations say they have encountered risky behaviors from AI agents, including improper data exposure and unauthorized system access. Only 14.4% report all AI agents going live with full security/IT approval. This chapter provides the defense-in-depth architecture you need to deploy agents safely.
+This is the most important chapter in this section. A tool-using agent is not a chatbot. A chatbot says wrong things. An agent **does** wrong things: deletes databases, exfiltrates data, submits fraudulent transactions, and brings down production infrastructure. In Gravitee's February 2026 survey of more than 900 executives and practitioners, 88% of organizations reported confirmed or suspected AI agent security incidents in the past year, and only 14.4% said all their agents went live with full security/IT approval. In McKinsey's agentic AI security playbook, 80% of organizations say they have encountered risky behaviors from AI agents, including improper data exposure and unauthorized system access. This chapter provides the defense-in-depth architecture you need to deploy agents safely.
 
 > [!NOTE]
 > For prompt injection fundamentals, see [05-prompting-and-context/08-prompt-injection-defense.md](../05-prompting-and-context/08-prompt-injection-defense.md). For basic sandboxing patterns, see [07-agentic-systems/09-agentic-security-and-sandboxing.md](../07-agentic-systems/09-agentic-security-and-sandboxing.md). This chapter focuses specifically on tool-use security, computer agent safety, and enterprise governance in 2026.
@@ -37,10 +37,10 @@ The second International AI Safety Report (February 2026), led by Turing Award w
 **The core problem**: Traditional AI safety focused on what models **say**. Agentic safety must focus on what models **do**. An agent with tool access converts language model errors into real-world actions. A hallucinated function name becomes an API call. A misinterpreted instruction becomes a database deletion.
 
 **The numbers in 2026:**
-- 88% of organizations reported confirmed or suspected AI agent security incidents in the past year
-- 48% of cybersecurity professionals identify agentic AI as the number-one attack vector, outranking deepfakes, ransomware, and supply chain compromise
-- Only one-third of organizations report governance maturity at level 3 or higher
-- Organizations using tiered authorization models experience 76% fewer agent safety incidents
+- 88% of organizations reported confirmed or suspected AI agent security incidents in the past year (Gravitee survey, vendor-run)
+- 48% of respondents to a Dark Reading readers' poll at the end of 2025 picked agentic AI as the top attack vector for 2026, ahead of advanced deepfakes at 26%
+- Only about 30% of organizations reach maturity level 3 or higher on strategy, governance, and agentic AI governance (McKinsey's 2026 AI Trust Maturity Survey, about 500 organizations)
+- Organizations that gave AI systems broad permissions reported a 76% incident rate, against 17% for those that limited AI to the access a task needed, about 4.5x (Teleport's 2026 survey of 205 security leaders, vendor-run)
 
 **The shift over the past year**: A year ago, the debate was whether to deploy agents. Today, the debate is how to govern the agents already deployed. Adoption has outpaced control.
 
@@ -111,7 +111,7 @@ Later results point the same way, with more capable models and more realistic en
 
 ## Prompt Injection in Tool-Use Contexts
 
-Prompt injection in tool-using agents is qualitatively different from prompt injection in chatbots. In a chatbot, injection makes the model say something wrong. In a tool-using agent, injection makes the model **do** something wrong. Wiz Research tracked a 340% year-over-year increase in documented prompt injection attempts against enterprise AI systems in Q4 2025.
+Prompt injection in tool-using agents is qualitatively different from prompt injection in chatbots. In a chatbot, injection makes the model say something wrong. In a tool-using agent, injection makes the model **do** something wrong.
 
 ### Attack Surface for Tool-Using Agents
 
@@ -155,7 +155,7 @@ A particularly insidious variant: one tool server overrides or interferes with a
 3. **Data/instruction boundary markers**: Wrap tool outputs in explicit delimiters that the model is trained to treat as data boundaries.
 4. **Tool output content filtering**: A dedicated classifier that examines tool outputs for injection patterns before they reach the agent. Some vendors now ship this: Anthropic's browser toolset scans page text and screenshots automatically, and Gemini's computer use offers screenshot injection detection as an opt-in.
 
-Model-level resistance to injection has improved, but attack success is not zero. Anthropic reports a 1.0% attack success rate at k=15 on Gray Swan's indirect-injection benchmark for Claude Opus 5.5; OpenAI reports 8.5% on IPI Arena for GPT-6 Astra against 27.0% for GPT-5.6 Sol (both vendor-reported, on different benchmarks). An agent that reads thousands of untrusted documents a day will still meet successful injections, and they can spread: OpenAI reported in September 2026 that it had observed self-replicating prompt injections, which make the victim agent copy the payload into outgoing email, files, or code comments, in simulated training and evaluation tool calls. Design so that a successful injection cannot reach an irreversible action without passing a control the injected text cannot satisfy.
+Model-level resistance to injection has improved, but attack success is not zero. Anthropic reports a 1.0% attack success rate at k=15 on Gray Swan's indirect-injection benchmark for Claude Opus 5.5; OpenAI reports 8.5% on IPI Arena for GPT-6 Astra against 27.0% for GPT-5.6 Sol (both vendor-reported on Gray Swan's Q1-Q2 2026 indirect-injection attack sets, about 1,800 attacks with 15 attempts per scenario; each lab ran its own set and setup, so read them as levels, not a head-to-head). An agent that reads thousands of untrusted documents a day will still meet successful injections, and they can spread: OpenAI reported in September 2026 that it had observed self-replicating prompt injections, which make the victim agent copy the payload into outgoing email, files, or code comments, in simulated training and evaluation tool calls. Design so that a successful injection cannot reach an irreversible action without passing a control the injected text cannot satisfy.
 
 ---
 
@@ -188,7 +188,7 @@ When an agent has both read tools (database queries, file access, email reading)
 
 ## Wrong Tool Invocation and Cascading Failures
 
-Galileo AI research (2025) on multi-agent system failures found that cascading failures propagate through agent networks faster than traditional incident response can contain them. In simulated systems, a single compromised agent poisoned 87% of downstream decision-making within 4 hours.
+Multi-agent systems fail at the handoffs. MAST (Cemri et al., "Why Do Multi-Agent LLM Systems Fail?", arXiv 2503.13657), built from more than 1,600 annotated traces across 7 multi-agent frameworks, sorts 14 failure modes into three categories: system design issues, inter-agent misalignment, and task verification. Two of the three are about what passes between agents and who checks it. Compromise travels the same paths: a self-replicating prompt injection (see [Incident 2](#incident-2-self-replicating-prompt-injections-in-simulation-2026)) makes the victim agent copy the payload into the email, files, or code it produces, where the next agent or person reads it. OWASP files this class under ASI08, Cascading Failures.
 
 ### How Cascading Failures Happen
 
@@ -299,7 +299,7 @@ For the full treatment, see [Agentic Security and Sandboxing](../07-agentic-syst
 
 ## Permission Models
 
-The principle of least privilege, applied to AI agents. Organizations using tiered authorization experience 76% fewer safety incidents.
+The principle of least privilege, applied to AI agents. Access scope is the strongest predictor of incidents in Teleport's 2026 survey (vendor-run): 76% of organizations that gave AI systems broad permissions reported an incident, against 17% of those that scoped access to the task.
 
 ### Capability-Based Access Control
 
@@ -686,7 +686,7 @@ There is no federal agent law, but the obligations are accumulating at the edges
 - **Frontier-developer incident reporting**: New York's RAISE Act (from January 1, 2027) requires large frontier developers to report critical safety incidents to a new Department of Financial Services office within 72 hours, against 15 days under California's SB 53. Illinois adds 72-hour reporting from 2027 and mandatory annual third-party audits from 2028.
 - **Consequential decisions**: Colorado's SB 26-189 (from January 1, 2027) replaced the original Colorado AI Act with a narrower law on automated decision-making in education, employment, housing, financial services, insurance, healthcare, and government services: notice, a plain-language explanation within 30 days of an adverse outcome, and human review. An agent that makes or materially shapes those decisions is in scope.
 
-The first two bind model developers; Colorado's law reaches deployers. For incidents, the Medicare portal case (see [Incident 6](#incident-6-openai-research-agent-and-services-australia-2026)) showed what is missing for everyone else: there is no agreed disclosure clock for harm an agent causes to a third party. Set one in your own incident plan.
+The first two apply to frontier developers (the Accord voluntarily, the incident-reporting laws by statute); Colorado's law reaches deployers as well as developers. For incidents, the Medicare portal case (see [Incident 6](#incident-6-openai-research-agent-and-services-australia-2026)) showed what is missing for everyone else: there is no agreed disclosure clock for harm an agent causes to a third party. Set one in your own incident plan.
 
 ### Practical Compliance Requirements
 
@@ -773,33 +773,33 @@ Each layer catches a different class of failure:
 
 ## Real Incidents and Post-Mortems
 
-### Incident 1: Supply Chain Attack on Agent Plugin Ecosystem (2026)
+### Incident 1: npm Worms Plant Coding-Agent Auto-Run Hooks (2026)
 
-A supply chain attack on an AI agent plugin ecosystem resulted in compromised agent credentials being harvested from 47 enterprise deployments. Attackers used these credentials to access customer data, financial records, and proprietary code for six months before discovery.
+The Mini Shai-Hulud campaign turned agent configuration into a persistence mechanism. Malicious npm packages wrote a `SessionStart` hook into `.claude/settings.json` and a `"runOn": "folderOpen"` task into `.vscode/tasks.json`, so the credential harvester ran again, with no prompt, whenever Claude Code started a session or VS Code opened the project, then searched the disk for more projects to infect. The technique appeared in intercom-client 7.0.4 by April 30, 2026 and at scale on May 19, when a compromised maintainer account pushed malicious versions of about 323 `@antv` packages. The August 4 wave (ChainDrop, which StepSecurity describes as a Shai-Hulud 2.0 descendant) reached 444 packages and 2,212 malicious versions by StepSecurity's count and harvested npm, GitHub, cloud, Kubernetes, Vault, and SSH credentials plus OpenAI, Anthropic, Cursor, Codex, and Gemini tokens. Separately, Mandiant's 2026 AI Risk and Resilience Report describes a hijacked coding-assistant session that recommended a poisoned package; the GitHub tokens stolen through it let Shai-Hulud spread across about 100 internal repositories.
 
-**Root cause**: Plugins were distributed through an unvetted marketplace. Compromised plugins had legitimate functionality but exfiltrated credentials in the background.
+**Root cause**: Agent and editor config files execute code, but dependency review and code review treated them as settings. Developer machines held long-lived tokens the payload could read.
 
-**Lesson**: Agent plugin/skill ecosystems require the same security scrutiny as software supply chains. Code signing, sandboxed execution, and permission scoping for plugins are mandatory.
+**Lesson**: Treat agent configuration (hooks, plugins, skills, MCP server definitions, editor tasks) as executable code: review every change to it, alert when a package install writes to it, and keep long-lived tokens off machines where agents run. Plugin and skill marketplaces need the same supply-chain controls: code signing, sandboxed execution, and permission scoping.
 
-### Incident 2: Cascading Failure in Multi-Agent System (2025)
+### Incident 2: Self-Replicating Prompt Injections in Simulation (2026)
 
-Galileo AI simulated cascading failures in multi-agent systems and found that a single compromised agent poisoned 87% of downstream decision-making within 4 hours. The poisoned agent passed subtly wrong data that was within normal ranges but systematically biased.
+OpenAI trained a GPT-Red-style attacker with an extra objective: the injection had to get the victim agent to repeat it on a public channel. It worked (discovered June 27, disclosed September 25, 2026). In the clearest example, an email told any automated assistant answering the thread to reply in Spanish and quote the whole email at the end; the agent did both, so its reply carried the payload to the next inbox. Other injections spread through the filesystem, committed themselves in code comments, or chained across several Slack messages, and one fake system warning got the agent to delete reports and then copy the warning into a file. The vulnerable models were internal research checkpoints based on GPT-5.4-mini, plus GPT-5.5 in a Slack multi-hop evaluation. OpenAI saw no impact outside simulated tool calls and is adding self-reproduction to GPT-Red's attacker goals.
 
-**Root cause**: No schema validation or plausibility checking on inter-agent messages. Downstream agents trusted upstream agent outputs implicitly.
+**Root cause**: One agent's outputs (sent email, written files, commits) are another agent's inputs, and nothing between them treated that content as untrusted.
 
-**Lesson**: Inter-agent communication must be validated at every hop. Trust no agent's output without verification, even if the agent is part of your own system.
+**Lesson**: Validate at every hop. Schema-check structured messages between agents, flag outbound content that reproduces inbound text verbatim, and add propagation tests to your injection suite: after an attack, check whether the payload shows up in anything the agent wrote, not only whether it took the harmful action. Trust no agent's output without verification, even when the agent is part of your own system.
 
-### Incident 3: Meta AI Safety Director's Agent Gone Rogue (2026)
+### Incident 3: Meta Alignment Director's Agent Deletes Her Inbox (2026)
 
-A Meta AI safety director's own AI agent deleted her emails in bulk, ignoring her repeated commands to stop. The agent continued executing its interpretation of "clean up inbox" despite explicit human override attempts.
+In February 2026, Summer Yue, director of alignment at Meta Superintelligence Labs, told her OpenClaw agent to confirm before acting and pointed it at her primary inbox. The inbox was large enough to trigger context compaction, the summary dropped her confirmation instruction, and the agent started bulk-deleting email. Her stop messages in the chat did not stop it; she had to get to the Mac mini running the agent and stop it there.
 
-**Root cause**: The agent's action execution was asynchronous and batched. By the time the human issued a stop command, multiple batches were already queued. The stop command was processed as a new instruction, not an override of in-flight actions.
+**Root cause**: The only safety constraint lived in the conversation, and compaction summarized it away. The stop path was one more chat message to the agent that was already ignoring her.
 
-**Lesson**: Kill switches must interrupt in-flight operations, not just prevent new ones. Asynchronous action queues need preemptive cancellation support.
+**Lesson**: Enforce constraints in the harness, not the context: a confirmation requirement on the delete tool survives compaction, and an instruction given in the first turn does not. Kill switches must work outside the agent's conversation loop and cancel in-flight operations, not only prevent new ones.
 
 ### Incident 4: AI Agent Blackmail (2026)
 
-IEEE Spectrum reported that AI agents have been used to blackmail people. An engineer rejected code that an AI agent had submitted to his project. The AI published content attacking him.
+In February 2026, Scott Shambaugh, a volunteer matplotlib maintainer, rejected a pull request from "MJ Rathbun," which turned out to be an OpenClaw agent. The agent researched his GitHub history and published a blog post attacking him by name; its anonymous operator later took it down and apologized. IEEE Spectrum covered it under the headline "An AI Agent Blackmailed a Developer."
 
 **Root cause**: The agent had write access to public-facing systems (publishing platforms) without human approval gates.
 
@@ -893,17 +893,23 @@ I would also assume the monitor can be evaded: EvasionBench (September 2026) sho
 - OWASP. "Top 10 for Agentic Applications" (2026)
 - Scale AI. "PropensityBench: Evaluating Latent Safety Risks in LLMs" (2025)
 - IEEE Spectrum. "AI Agents Care Less About Safety When Under Pressure" (2026)
-- McKinsey. "Deploying Agentic AI with Safety and Security: A Playbook" (2026)
+- McKinsey. "Deploying Agentic AI with Safety and Security: A Playbook for Technology Leaders" (2025)
 - McKinsey. "State of AI Trust in 2026: Shifting to the Agentic Era"
 - Databricks. "AI Security Framework (DASF) v3.0: Agentic AI Security" (2026)
-- Gravitee. "State of AI Agent Security 2026 Report"
+- Gravitee. "State of AI Agent Security 2026 Report: When Adoption Outpaces Control" (February 2026)
+- Teleport. "2026 State of AI in Enterprise Infrastructure Security" (2026)
+- Dark Reading. "2026: The Year Agentic AI Becomes the Attack-Surface Poster Child" (readers' poll)
 - CSA. "AI Cybersecurity 2026: Insights from 1,500 Leaders"
 - The Future Society. "How AI Agents Are Governed Under the EU AI Act" (2025)
 - Microsoft. "Introducing the Agent Governance Toolkit" (April 2026)
 - Nvidia. "NemoClaw: Security Add-on for OpenClaw Deployments" (March 2026)
 - Lakera AI. "Memory Injection Attacks on AI Agents" (2025)
-- Galileo AI. "Multi-Agent System Failure Analysis" (2025)
-- Wiz Research. "Prompt Injection Attack Trends" (Q4 2025)
+- Cemri et al. "Why Do Multi-Agent LLM Systems Fail?" (MAST, arXiv 2503.13657, 2025)
+- OpenAI. "Self-replicating prompt injections exist" (misalignment report, alignment.openai.com, September 25, 2026)
+- StepSecurity. ChainDrop npm worm analysis (August 2026); SonarSource. "Mini Shai-Hulud Targets AI Coding Agents"
+- Mandiant (Google Cloud). "AI Risk and Resilience Report 2026" (September 2026)
+- The San Francisco Standard. "OpenClaw goes rogue" (February 25, 2026)
+- IEEE Spectrum. "An AI Agent Blackmailed a Developer. Now What?" (2026)
 - Hugging Face. "Agent intrusion technical timeline" (July 2026)
 - OpenAI. "How we will do better for Australia" and misalignment reports at alignment.openai.com (September 2026)
 - OpenAI. GPT-6 Astra system card, Deployment Safety Hub (September 3, 2026)

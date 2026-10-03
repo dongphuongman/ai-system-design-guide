@@ -654,7 +654,7 @@ The practical setup: subscribe to provider changelogs and status feeds, tag ever
 
 ## 2026 Eval Evolution: Beyond LLM-as-Judge
 
-The 2023-2024 playbook ("use GPT-4 as a judge") was good enough for v1 systems but cracked under three pressures: cost at scale, agent trajectories that string-graders cannot inspect, and benchmarks that conflate retrieval, memory, and reasoning. By May 2026 the production eval stack has split into four layers that work together.
+The 2023-2024 playbook ("use GPT-4 as a judge") was good enough for v1 systems but cracked under three pressures: cost at scale, agent trajectories that string-graders cannot inspect, and benchmarks that conflate retrieval, memory, and reasoning. By mid-2026 the production eval stack had split into four layers that work together: cheap judges inline on every trace, trajectory grading for agents, frontier judges for calibration, and human review for ground truth.
 
 ### The Layered Judge Architecture
 
@@ -723,7 +723,7 @@ The finding that matters for the layered architecture above is about **correlate
 Sister benchmarks:
 
 - **[tau-Voice](https://arxiv.org/abs/2603.13686)**: full-duplex speech variant with interruptions, accents, and background noise. Catches a class of failures (timing, interruption handling, recovery from ASR errors) that text-only benchmarks miss entirely. Voice scores now track the reasoning attached to the voice layer: Sierra's voice leaderboard has gpt-live-1 at 81.7% pass@1, and Google reports Gemini 3.8 Live at 68.6% with extended thinking against 30.1% without (vendor-reported; the two sources are not comparable). Plain speech-to-speech without a reasoning backend still trails text agents badly, and the per-turn latency budget now has to pay for the thinking.
-- **[tau-Knowledge](https://sierra.ai/blog/tau-knowledge)**: extends the simulation with an internal knowledge base the agent must retrieve from. Decouples "does the agent retrieve" from "does the agent act."
+- **[tau-Knowledge](https://sierra.ai/blog/tau-knowledge)**: the benchmark behind tau3's banking_knowledge domain. It extends the simulation with an internal knowledge base the agent must retrieve from: a fintech support setting over 698 documents (about 195K tokens), where a task needs an average of 18.6 documents and 9.5 tool calls. Decouples "does the agent retrieve" from "does the agent act."
 - **[Hyper-tau-bench](https://sierra.ai/blog/hyper-t-bench-evaluating-agents-that-build-agents)** (September 8, 2026): evaluates an agent that *builds* a customer-service agent from business records and client interviews, scored on the built agent's held-out tests. Claude Opus 5 at max effort in Claude Code alone passed 23.9%; the same model class paired with an engineer who had deep context reached 82.2%. The gap was requirement elicitation: developer agents asked at most 4 client questions when the client held 20 to 25 requirements, and 17 to 42% of runs probed the sandbox or grader trying to cheat (none succeeded).
 
 In practice, the pass^k metric is the most actionable. A Pass^1 of 70% and a Pass^4 of 12% says "the agent works on the easy path but cannot recover from any small perturbation." That is exactly the signal production teams need before rolling out an agent at scale.
@@ -771,7 +771,7 @@ The practical recipe:
 - Instrument the memory layer with **per-operation evals**: every write, update, and read has a separate eval.
 - Use a distilled judge (Luna-2 or similar) per operation type.
 - Track each stage's error rate over time; a 5% extraction error compounds over thousands of operations into a wholly unreliable agent.
-- Measure task success **with and without memory**, not just memory accuracy. MemTrapBench (arXiv 2608.20202, August 2026) found that correctly stored, relevant memories still distorted reasoning: across two model families and five memory frameworks, every memory strategy underperformed the no-memory setting.
+- Measure task success **with and without memory**, not just memory accuracy. On MemTrapBench (arXiv 2608.20202, August 2026) tasks built to trigger memory traps, correctly stored, relevant memories still distorted reasoning: across two model families and five memory frameworks, every memory strategy underperformed the no-memory setting.
 
 ### A Production Eval Stack
 

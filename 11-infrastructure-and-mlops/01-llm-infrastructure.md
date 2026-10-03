@@ -64,7 +64,7 @@ def should_use_api(requirements: dict) -> bool:
 | SGLang | Medium | Excellent | Prefix-heavy and agentic traffic (radix cache), structured output |
 | TensorRT-LLM | Medium-High | Best (NVIDIA) | Peak NVIDIA throughput; the PyTorch backend has been the default since 1.0, so no per-model engine build |
 | NVIDIA Dynamo / llm-d | High | Fleet-level | Orchestration above the engines: KV-aware routing, disaggregated prefill and decode |
-| TGI (Hugging Face) | Medium | Very good | In maintenance mode; Hugging Face now recommends vLLM or SGLang for new deployments |
+| TGI (Hugging Face) | Medium | Very good | In maintenance mode (repository archived March 2026); Hugging Face now recommends vLLM or SGLang for new deployments |
 | Ollama | Low | Good | Development, small scale |
 | llama.cpp | Low | Good | CPU inference, edge |
 
@@ -267,26 +267,50 @@ class CostTracker:
     def calculate_cost(
         self,
         model: str,
-        input_tokens: int,
+        uncached_tokens: int,
         output_tokens: int,
         cached_tokens: int = 0
     ) -> float:
+        # Expects disjoint counts from normalize_usage, never a raw provider total.
         # Omitted for brevity: cache-write premiums, service-tier multipliers, and
         # long-context rates (OpenAI bills the whole request higher above 272K input)
         pricing = self.PRICING[model]
-        uncached = input_tokens - cached_tokens
         input_cost = (
-            uncached * pricing["input"] + cached_tokens * pricing["cached_input"]
+            uncached_tokens * pricing["input"] + cached_tokens * pricing["cached_input"]
         ) / 1_000_000
         output_cost = (output_tokens / 1_000_000) * pricing["output"]
         return input_cost + output_cost
     
-    def track(self, request_id: str, model: str, tokens: dict):
+    @staticmethod
+    def normalize_usage(provider: str, usage: dict) -> dict:
+        # Providers disagree on whether cached tokens sit inside the input count;
+        # subtracting them from an Anthropic total undercounts spend, even below zero.
+        if provider == "anthropic":
+            # input_tokens already excludes cache reads and cache writes.
+            # Writes are priced at the base input rate here (premium omitted above).
+            return {
+                "uncached": usage["input_tokens"]
+                + usage.get("cache_creation_input_tokens", 0),
+                "cached": usage.get("cache_read_input_tokens", 0),
+                "output": usage["output_tokens"],
+            }
+        if provider == "openai":
+            # input_tokens includes cached tokens, so subtract them
+            cached = usage.get("input_tokens_details", {}).get("cached_tokens", 0)
+            return {
+                "uncached": usage["input_tokens"] - cached,
+                "cached": cached,
+                "output": usage["output_tokens"],
+            }
+        raise ValueError(f"No usage normalizer for provider {provider!r}")
+    
+    def track(self, request_id: str, provider: str, model: str, usage: dict):
+        tokens = self.normalize_usage(provider, usage)
         cost = self.calculate_cost(
             model,
-            tokens["input"],
+            tokens["uncached"],
             tokens["output"],
-            tokens.get("cached", 0)
+            tokens["cached"]
         )
         
         self.metrics.record(
@@ -303,7 +327,7 @@ class CostTracker:
 | Strategy | Savings | Implementation |
 |----------|---------|----------------|
 | Model routing | 50-80% | Route simple queries to cheap models |
-| Prompt caching | 90%+ on the cached prefix | Stable prefix; provider cache reads cost 0.1x input or less |
+| Prompt caching | 75-98% on the cached prefix (90% on most models) | Stable prefix; provider cache reads cost 0.1x input on most models, from about 0.02x (DeepSeek V4.1-Flash) to 0.25x (xAI Grok 4.7) |
 | Response caching | 30-70% on repeat-heavy traffic | Exact-match and semantic caches |
 | Prompt optimization | 10-30% | Shorter prompts, structured output |
 | Batch and Flex tiers | 50% | Batch endpoints or a Flex tier for async work |
@@ -500,7 +524,7 @@ The hardware picture moved faster in 2026 than at any earlier point in the AI bu
 
 ### NVIDIA: Vera Rubin NVL72 and Blackwell Ultra
 
-**Vera Rubin NVL72** is the new flagship. NVIDIA announced the full-production ramp on May 31, 2026, and by its August 26 earnings report Rubin racks were running at CoreWeave, Google Cloud, Microsoft Azure, OCI and Nebius ([NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/)). The **B300** ("Blackwell Ultra"), shipping in volume since January 2026 ([NVIDIA newsroom announcement](https://nvidianews.nvidia.com/news/nvidia-blackwell-ultra-ai-factory-platform-paves-way-for-age-of-ai-reasoning)), is now the volume workhorse.
+**Vera Rubin NVL72** is the new flagship. NVIDIA announced the full-production ramp on May 31, 2026, and by its August 26 earnings report Rubin racks were running at CoreWeave, Google Cloud, Microsoft Azure, OCI and Nebius ([NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/)). The **B300** ("Blackwell Ultra") was announced in March 2025 with partner systems from the second half of 2025 ([NVIDIA newsroom announcement](https://nvidianews.nvidia.com/news/nvidia-blackwell-ultra-ai-factory-platform-paves-way-for-age-of-ai-reasoning)), and NVIDIA called it its leading architecture across all customer categories by the quarter ended October 26, 2025 ([Q3 FY2026 CFO commentary](https://s201.q4cdn.com/141608511/files/doc_financials/2026/Q326/Q3FY26-CFO-Commentary.pdf)). It is now the volume workhorse.
 
 | Spec | Vera Rubin NVL72 | B300 / GB300 NVL72 |
 |------|------------------|---------------------|
@@ -509,7 +533,7 @@ The hardware picture moved faster in 2026 than at any earlier point in the AI bu
 | Total HBM per rack | 20.7 TB at ~1,400 TB/s | ~20 TB at up to 576 TB/s |
 | Aggregate NVLink bandwidth per rack | 216 TB/s | ~130 TB/s |
 | Peak FP4 per rack | 3,600 PFLOPS NVFP4 inference (50 per GPU) | 1,440 PFLOPS sparse, 1,080 dense (~15 per GPU dense) |
-| Status | Full-production ramp since May 31, 2026; first clouds live | ~60,000 racks projected for 2026 (Jensen Huang, GTC 2026 keynote) |
+| Status | Full-production ramp since May 31, 2026; first clouds live | Shipping since H2 2025; NVIDIA's leading architecture by its October 2025 quarter |
 
 Same 288 GB per GPU, far more bandwidth: Rubin's gain shows up in decode-heavy and long-context serving more than in model capacity per GPU.
 
@@ -586,7 +610,7 @@ The constraint: Trainium runs the **AWS Neuron SDK**, not CUDA. Porting a stack 
 
 ### Cerebras IPO (May 2026)
 
-Cerebras priced its IPO at **$185/share** on May 13, 2026 and raised about **$5.55B**. The stock opened at $350 on May 14, briefly valuing the company above $100B, and closed its first day at $311.07, a valuation of about **$67B** ([SiliconANGLE](https://siliconangle.com/2026/05/13/cerebras-stock-almost-doubles-initial-offering-price-biggest-tech-ipo-years-raised-55b/)).
+Cerebras priced its IPO at **$185/share** on May 13, 2026 and raised about **$5.5B**. The stock opened at $350 on May 14, briefly valuing the company above $100B, and closed its first day at $311.07, a valuation of about **$67B** ([SiliconANGLE](https://siliconangle.com/2026/05/13/cerebras-stock-almost-doubles-initial-offering-price-biggest-tech-ipo-years-raised-55b/)).
 
 What changed in the market around it:
 
@@ -607,7 +631,7 @@ The IPO is structurally important because it changes the financing thesis: there
 | Per-chip | RISC-V cores and Tensix tiles |
 | Peak BlockFP8 | **~23 PFLOPS** per server |
 | Memory | 1 TB GDDR6 at 16 TB/s, plus 6.2 GB of on-chip SRAM |
-| List price | **$160,000** per 32-chip server on Tenstorrent's product page in October 2026 (launched at $110,000 in April) |
+| List price | Starting at **$160,000** per 32-chip server on Tenstorrent's product page in October 2026; the April launch announcement listed the same 32-chip, 23 PFLOPS configuration starting at $110,000 |
 | Architecture | Fully open RISC-V control plane, open firmware, open compiler |
 
 The open-source RISC-V story matters for two audiences:
@@ -653,7 +677,7 @@ flowchart TD
 | Tier | What It Serves | Default Hardware | Why |
 |------|----------------|-------------------|-----|
 | **Tier 1: Training and Heavy Compute** | Frontier model training, reasoning-heavy inference, multi-trillion-parameter MoE | **Vera Rubin NVL72**, **GB300 NVL72**, **MI455X Helios**, **TPU7x** | Need NVLink-class coherency and the largest HBM pools available |
-| **Tier 2: High-Throughput Inference** | API products, RAG backends, agent platforms | **Trainium3**, **MI455X**, **B300**, cross-chip prefill/decode (**Rubin + LPX**, **Trainium + Cerebras**, **Helios + Cerebras**) for the premium-latency slice | Optimize for goodput at the SLO and predictable P99, often MoE-aware |
+| **Tier 2: High-Throughput Inference** | API products, RAG backends, agent platforms | **Trainium3**, **MI455X**, **B300**, cross-chip prefill/decode (**Rubin + LPX**, plus the announced **Trainium + Cerebras** and **Helios + Cerebras**) for the premium-latency slice | Optimize for goodput at the SLO and predictable P99, often MoE-aware |
 | **Tier 3: Edge and Specialty** | Latency-critical, sovereign, open-source-firmware mandated, low total spend | **Tenstorrent Galaxy**, **Apple Silicon**, consumer GPUs, hardwired-model ASICs | $/perf, open stack, regulatory locality |
 
 The framing that matters in 2026: **no senior architect designs a serious AI product around a single vendor anymore**. The capacity is too contested, the price moves too fast, and the failure modes are too correlated within a single vendor's stack. Multi-vendor is the new default.
@@ -662,7 +686,7 @@ The framing that matters in 2026: **no senior architect designs a serious AI pro
 
 - Plan around **memory per accelerator** as much as FLOPS. MoE serving is bottlenecked on expert residency, and memory is now the supply constraint as well.
 - Treat **CUDA lock-in as a real cost**. ROCm 7.x is good enough for most production serving. Neuron is good enough for Anthropic and any team willing to do the porting work. Open RISC-V is good enough for cost-sensitive inference.
-- The hyperscaler choice now drives the chip choice as much as the other way around. AWS = Trainium + Cerebras + NVIDIA. Microsoft = NVIDIA + Maia. Google = TPU7x + NVIDIA (among the first Vera Rubin clouds). Oracle = NVIDIA at scale. The labs build their own: OpenAI runs NVIDIA, expects AMD Helios online from Q4 2026, and plans its own Jalapeño from late 2026 (announced).
+- The hyperscaler choice now drives the chip choice as much as the other way around. AWS = Trainium + NVIDIA, with Cerebras announced. Microsoft = NVIDIA + Maia. Google = TPU7x + NVIDIA (among the first Vera Rubin clouds). Oracle = NVIDIA at scale. The labs build their own: OpenAI runs NVIDIA, expects AMD Helios online from Q4 2026, and plans its own Jalapeño from late 2026 (announced).
 - **API $/token keeps falling** (for constant capability, a16z's [LLMflation analysis](https://a16z.com/llmflation-llm-inference-cost/) measured about 10x per year through 2024), but **GPU-hours got more expensive in 2026**. On September 7, a 12-month B200 term priced at $5.39 per GPU-hour against $5.73 for 3 months (Silicon Data), so longer terms are now the cheaper way to rent, the opposite of the old "wait for spot to fall" assumption.
 - **Evaluate hardware on Pareto curves under agentic traffic** (multi-turn, long context, high prefix reuse), at your interactivity SLO. MLPerf Inference v6.1 (September 16, 2026) added end-to-end RAG and edge agentic benchmarks for the same reason.
 

@@ -14,7 +14,7 @@ Constraints:
 - Per-query latency budget: under 1.2 seconds p99
 - Tenants on different compliance regimes: SOC 2, ISO 27001, HIPAA, FedRAMP Moderate
 
-The team picks per-tenant LoRA adapters on a shared base model. LoRA ([Hu et al., 2021](https://arxiv.org/abs/2106.09685)) and QLoRA ([Dettmers et al., 2023](https://arxiv.org/abs/2305.14314)) are mature; vLLM's multi-LoRA serving ([docs](https://docs.vllm.ai/en/latest/models/lora.html)) and SGLang's adapter swapping let many adapters share one base model in GPU memory. Anyscale and Together AI have both published production case studies on this pattern ([Anyscale 2024 post](https://www.anyscale.com/blog/fine-tuning-llms-lora-or-full-parameter-an-in-depth-analysis), [Together AI multi-LoRA serving](https://www.together.ai/blog/multi-lora-inference)). Hosted fine-tuning is not a dependable alternative: OpenAI is winding down its fine-tuning platform (organizations that never fine-tuned can no longer start, and existing customers lose new-job creation on January 6, 2027), so per-tenant customization belongs on weights the platform controls.
+The team picks per-tenant LoRA adapters on a shared base model. LoRA ([Hu et al., 2021](https://arxiv.org/abs/2106.09685)) and QLoRA ([Dettmers et al., 2023](https://arxiv.org/abs/2305.14314)) are mature; vLLM's multi-LoRA serving ([docs](https://docs.vllm.ai/en/latest/features/lora/)) and SGLang's adapter swapping let many adapters share one base model in GPU memory. Anyscale published a LoRA-versus-full-fine-tuning comparison ([Anyscale 2024 post](https://www.anyscale.com/blog/fine-tuning-llms-lora-or-full-parameter-an-in-depth-analysis)), and managed providers sell the pattern with tight caps: Together AI's dedicated endpoints hold at most 16 loaded adapters per endpoint for Llama 3.3 70B ([docs](https://docs.together.ai/docs/dedicated-endpoints/lora-adapter)), so 280 tenants would mean 18 endpoints. Hosted fine-tuning is not a dependable alternative: OpenAI is winding down its fine-tuning platform (organizations that never fine-tuned can no longer start, and existing customers lose new-job creation on January 6, 2027), so per-tenant customization belongs on weights the platform controls.
 
 ## Architecture
 
@@ -83,7 +83,7 @@ A full 70B fine-tune per tenant costs about $4,500 in compute, produces a 140 GB
 
 ### 2. Adapter swap budget and the noisy-neighbor problem
 
-vLLM's multi-LoRA support keeps adapters in GPU memory but each adapter consumes a few hundred MB. On an 80 GB H100 running a 70B base in 4-bit (about 40 GB), we have roughly 30 GB for adapters and KV cache. That budgets to roughly 200 adapters resident at once. We use LRU with traffic-aware pre-warming and tail-tenant pinning: the 30 tenants with strict latency SLAs are pinned and never evicted; the rest rotate. A tenant whose adapter is cold pays a 200 to 600 ms tail penalty. We surface that explicitly in the tenant SLA as a cold-start budget. Adapters train against the BF16 weights but serve on the 4-bit base, so the eval gate runs on the 4-bit serving stack to catch quantization drift before promotion.
+vLLM's multi-LoRA support keeps resident adapters in GPU memory, and each one costs about its artifact size: roughly 120 MB for r=16 on Q, K, V and O across the 70B base's 80 layers. On an 80 GB H100 running a 70B base in 4-bit (about 40 GB), we have roughly 30 GB for adapters and KV cache, and KV cache needs most of it: 200 adapters on one GPU would eat about 24 GB. So we cap each GPU at 25 resident adapters (about 3 GB) and route with adapter affinity, sending a tenant only to the GPUs that already hold its adapter, which gives an 8-GPU node roughly 200 distinct adapters resident at once. We use LRU with traffic-aware pre-warming and tail-tenant pinning: the 30 tenants with strict latency SLAs are pinned and never evicted; the rest rotate. A tenant whose adapter is cold pays a 200 to 600 ms tail penalty. We surface that explicitly in the tenant SLA as a cold-start budget. Adapters train against the BF16 weights but serve on the 4-bit base, so the eval gate runs on the 4-bit serving stack to catch quantization drift before promotion.
 
 The noisy-neighbor failure: one tenant suddenly bursts to 10x normal traffic, pushing other adapters out of cache. Mitigation: per-tenant token-bucket rate limit at the gateway, plus dynamic adapter eviction protection for any adapter that served traffic in the last 60 seconds.
 
@@ -244,10 +244,10 @@ We hold SOC 2 Type II and are certified for ISO 27001. Customer audit packs incl
 
 - Hu et al., [LoRA: Low-Rank Adaptation of Large Language Models](https://arxiv.org/abs/2106.09685)
 - Dettmers et al., [QLoRA: Efficient Finetuning of Quantized LLMs](https://arxiv.org/abs/2305.14314)
-- [vLLM Multi-LoRA serving docs](https://docs.vllm.ai/en/latest/models/lora.html)
+- [vLLM LoRA adapters docs](https://docs.vllm.ai/en/latest/features/lora/)
 - Kwon et al., [Efficient Memory Management for LLM Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
 - Anyscale, [Fine-tuning LLMs: LoRA or full-parameter](https://www.anyscale.com/blog/fine-tuning-llms-lora-or-full-parameter-an-in-depth-analysis)
-- Together AI, [Multi-LoRA inference at scale](https://www.together.ai/blog/multi-lora-inference)
+- Together AI, [Serve multiple LoRA adapters on one endpoint](https://docs.together.ai/docs/dedicated-endpoints/lora-adapter)
 - Hamel Husain, [How to construct domain-specific evals](https://hamel.dev/blog/posts/evals/)
 - Eugene Yan, [Evals: Constructed for LLM Apps](https://eugeneyan.com/writing/evals/)
 - Microsoft, [DeepSpeed ZeRO-3](https://www.deepspeed.ai/training/)

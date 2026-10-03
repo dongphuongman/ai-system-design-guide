@@ -87,11 +87,10 @@ We use **State Narrowing**. Instead of passing the entire global state to every 
 ---
 
 ## References
-- LangChain Team. "LangGraph: Multi-Agent Workflows at Scale" (2025)
+- LangChain. "LangGraph: Multi-Agent Workflows" (Jan 2024): https://www.langchain.com/blog/langgraph-multi-agent-workflows
 - LangGraph persistence docs: https://docs.langchain.com/oss/python/langgraph/persistence
 - LangChain release policy: https://docs.langchain.com/oss/python/release-policy
-- Anthropic. "Building Resilient Agents with State Machines" (2025)
-- OpenSource AI. "Cycles and the Future of Agency" (2024 Tech Report)
+- Anthropic. "Building Effective AI Agents" (Dec 2024; workflows vs agents, orchestrator-workers, evaluator-optimizer): https://www.anthropic.com/engineering/building-effective-agents
 
 ---
 

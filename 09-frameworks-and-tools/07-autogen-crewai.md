@@ -154,7 +154,7 @@ OpenAI's lightweight framework for multi-agent workflows using native Python/Typ
 AgentKit (October 2025) bundled a visual **Agent Builder**, **ChatKit** (an embeddable, themeable chat UI), a **Connector Registry** (central governance for how data sources and tools connect across OpenAI products), and **Evals** around the Responses API and Agents SDK. Two of those pieces are going away:
 
 - **Agent Builder** shuts down November 30, 2026 (deprecation announced June 3, 2026). OpenAI points users to the Agents SDK or ChatGPT Workspace Agents.
-- The **Evals** platform goes read-only October 31 and shuts down November 30, 2026, with a migration guide to Promptfoo. OpenAI agreed to acquire Promptfoo in March 2026; it remains MIT-licensed and supports other providers. Reusable Prompts shut down the same day.
+- The **Evals** platform goes read-only October 31 and shuts down November 30, 2026, with a migration guide to Promptfoo. OpenAI agreed to acquire Promptfoo in March 2026; it remains MIT-licensed and supports other providers. Reusable Prompts also shuts down on November 30, 2026.
 
 **What it means**: OpenAI is consolidating on the two ends of the spectrum, code-first (Agents SDK) and fully managed (Agents API, below). The visual-builder middle was deprecated eight months after launch. Keep agent definitions in code you own; a canvas export is not a durable source of truth.
 
@@ -166,7 +166,7 @@ The Apps SDK extends the **Model Context Protocol** so an MCP server can ship a 
 
 Google's framework optimized for the Google ecosystem but model-agnostic:
 
-- **Versions**: Python 2.0 went GA May 19, 2026 and reached 2.10.0 on Sep 25 (2.11.0 hit PyPI Oct 2); Go 2.0 shipped Jun 30 (`google.golang.org/adk/v2`); TypeScript 2.0.0 on Aug 21 (its Workflow API still marked experimental); Java remains on 1.x (1.10.1, Sep 18). The Python 1.x line is still patched.
+- **Versions**: Python 2.0 went GA May 19, 2026 and reached 2.10.0 on Sep 25 (2.11.0 hit PyPI Oct 2); Go 2.0 shipped Jun 30 (`google.golang.org/adk/v2`) and is now v2.5.0 (Sep 30); TypeScript 2.0.0 went GA Aug 21 and is now 2.2.0 (Sep 30), with its Workflow API still marked experimental; Java remains on 1.x (1.10.1, Sep 18). The Python 1.x line is still patched.
 - **Graph workflows (2.0)**: Static and dynamic graphs, fan-out and fan-in (`JoinNode`), per-node retries and timeouts, schema validation, and human-in-the-loop pause and resume. ADK-TS 2.0 deprecates `SequentialAgent`, `ParallelAgent` and `LoopAgent` (they still run, with a warning).
 - **A2A native**: Built-in Agent-to-Agent protocol support for cross-vendor orchestration
 - **Vertex AI integration**: Deploy to Agent Engine Runtime for managed hosting
@@ -217,7 +217,7 @@ Both frameworks (and the broader SDK landscape) have adopted **Swarm Patterns**.
 
 | Feature | CrewAI | MS Agent Framework | LangGraph | Claude Agent SDK | OpenAI Agents SDK | Google ADK |
 |---------|--------|-------------------|-----------|-----------------|-------------------|------------|
-| **Current release** | 1.15.23 (Sep 28) | py 1.19.0 (Sep 18), .NET 1.23.0 (Oct 1) | 1.2.12 (Sep 21) | py 0.2.163, TS 0.3.287 | py 0.22.3 (Sep 17), JS 0.18.0 | py 2.10.0 (Sep 25), TS 2.0.0, Go 2.0, Java 1.10.1 |
+| **Current release** | 1.15.23 (Sep 28) | py 1.19.0 (Sep 18), .NET 1.23.0 (Oct 1) | 1.2.12 (Sep 21) | py 0.2.163, TS 0.3.287 | py 0.22.3 (Sep 17), JS 0.18.0 | py 2.10.0 (Sep 25), TS 2.2.0 (Sep 30), Go 2.5.0 (Sep 30), Java 1.10.1 |
 | **Core Abstraction** | Task/Process/Flow | Workflow/Agent | State/Graph | Agent loop + subagents | Handoff/Agent | Agent + graph workflow |
 | **Architecture** | Declarative + State Machine | Graph Workflows | Cyclic state graph | Hierarchical Tree | Swarm Handoffs | Directed Graph |
 | **Ease of Use** | High | Medium | Low | Medium | High | Medium |
@@ -258,7 +258,7 @@ When the hard parts I would otherwise build (durable sessions, context compactio
 - CrewAI. Changelog and releases (1.14.0, 1.15.x): https://github.com/crewAIInc/crewAI/releases
 - Microsoft. "Agent Framework Overview" (2026): https://learn.microsoft.com/en-us/agent-framework/overview/
 - Microsoft. "Microsoft Agent Framework Version 1.0" (Apr 2026): https://devblogs.microsoft.com/agent-framework/microsoft-agent-framework-version-1-0/
-- Microsoft. "AutoGen to Agent Framework Migration Guide" (2026)
+- Microsoft Learn. "AutoGen to Microsoft Agent Framework Migration Guide": https://learn.microsoft.com/en-us/agent-framework/migration-guide/from-autogen/
 - Anthropic. "Claude Agent SDK" (2026): https://code.claude.com/docs/en/agent-sdk/python
 - OpenAI. "Agents SDK" releases: https://github.com/openai/openai-agents-python/releases
 - OpenAI. "Agents API overview" (beta, Sep 2026): https://developers.openai.com/api/docs/guides/agents-api/overview
@@ -266,7 +266,7 @@ When the hard parts I would otherwise build (durable sessions, context compactio
 - [OpenAI. "Introducing AgentKit" (2025)](https://openai.com/index/introducing-agentkit/)
 - [OpenAI. "Apps SDK" (2025)](https://developers.openai.com/apps-sdk)
 - Google. "Agent Development Kit" (2026): https://google.github.io/adk-docs
-- OpenAI Swarm. "Lightweight Multi-Agent Orchestration" (2024 tech report)
+- OpenAI. Swarm (educational multi-agent repo, now replaced by the Agents SDK): https://github.com/openai/swarm
 
 ---
 

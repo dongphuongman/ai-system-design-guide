@@ -202,6 +202,7 @@ Almost all major providers (OpenAI, Anthropic, Google, DeepSeek) support **Prefi
 |----------|-------------|------------|-----------|
 | **Anthropic** | 1.25x (5-minute TTL) or 2x (1-hour TTL) | 0.1x on most models; 0.05x on Opus 5.5 ($0.20 per 1M); 0.025x on Fable 5.1 ($0.25 per 1M) | Explicit `cache_control` breakpoints or top-level auto-caching |
 | **OpenAI** (GPT-5.6 and later) | 1.25x | 0.1x; 0.05x on GPT-6.1 Sol | Automatic above 1,024 tokens; TTL fixed at 30 minutes |
+| **Google** (Gemini 3.8 Flash) | No separate write price; explicit caches bill storage at $0.50 per 1M tokens per hour ($1.00 from January 1, 2027) | 0.1x ($0.075 per 1M at the introductory rate, $0.15 from January 1, 2027) | Implicit caching is automatic above 4,096 tokens; explicit caches give you control over contents and lifetime, but an idle one can cost more in storage than it saves |
 | **DeepSeek** (V4.1-Flash) | No surcharge (a miss bills at the normal input price) | about 2% of the cache-miss price | Automatic; peak and off-peak pricing |
 
 - **The Crossover**: with a 1.25x write and a 0.1x or cheaper read, the cache pays for itself on the first hit; a 2x one-hour write pays off from the second hit. If you reuse a large context (e.g., a codebase) more than once inside the TTL, caching wins.
@@ -254,6 +255,7 @@ Two things. Thinking blocks on the newest Claude models are bound to the model t
 - [Anthropic. Preserved thinking (thinking-block binding)](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking)
 - [Claude API release notes (compaction, effort, inline tools)](https://platform.claude.com/docs/en/release-notes/overview)
 - [OpenAI. Prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching)
+- [Google. Gemini API context caching](https://ai.google.dev/gemini-api/docs/caching) and [pricing](https://ai.google.dev/gemini-api/docs/pricing)
 - [OpenAI. Misalignment reports (compaction summaries)](https://alignment.openai.com/misalignment-reports/)
 - [Cursor. "Improved token efficiency for longer agent runs" (September 2026)](https://cursor.com/blog/improved-token-efficiency)
 - [Anthropic. Claude Opus 5.5 and Claude Code usage data (September 2026)](https://claude.com/blog/claude-opus-5-5-built-for-coding-sessions-that-use-more-context)

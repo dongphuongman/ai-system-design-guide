@@ -69,9 +69,9 @@ flowchart TB
 | AWS Textract | Better text, still struggles with layout | ~$0.15 | ParseBench 53.3 (Cohere-run) |
 | Parsing VLM via API (Cohere parse-v5.0) | Markdown with HTML tables, or blocks with bounding boxes | $0.15 ($1.50 per 1,000 pages) | ParseBench 79.2 (vendor-run) |
 | Parsing VLM, self-hosted (MinerU 4.0, PaddleOCR-VL, NVIDIA Nemotron Parse 2.0) | Reading order, layout classes, bounding boxes | GPU time only | OmniDocBench v1.6 and olmOCR-Bench; check each license (jina-ocr-v1, for example, is CC BY-NC) |
-| Frontier VLM (Gemini 3.8 Flash) | Clean Markdown; strongest fallback for stamps and handwriting | ~$0.30 introductory, ~$0.62 from January 1, 2027 | ParseBench for frontier VLMs: GPT-5.5 84.4, Gemini 3.5 Flash 81.8 (Cohere-run; 3.8 Flash not listed) |
+| Frontier VLM (Gemini 3.8 Flash) | Clean Markdown; strongest fallback for stamps and handwriting | ~$0.43 introductory, ~$0.86 from January 1, 2027 | ParseBench for frontier VLMs: GPT-5.5 84.4, Gemini 3.5 Flash 81.8 (Cohere-run; 3.8 Flash not listed) |
 
-The frontier row assumes ~1.1K input and ~600 output tokens per page. At the January 2027 list price, running every scanned page through Gemini 3.8 Flash alone would blow the $0.50 budget on a 100-page scan. So the pipeline routes: every scanned page goes through the parsing VLM, and only the ~15% of pages that come back low-confidence or fail layout checks (stamps, handwriting, broken tables) escalate to the frontier VLM. MinerU 4.0 builds the same idea into its parser with four quality tiers, from model-free extraction for digital PDFs up to an "advanced" tier for hard documents. All ParseBench numbers here come from Cohere's launch post (vendor-run), so treat the 3- to 5-point gap between frontier VLMs and Cohere Parse as indicative and re-measure on your contracts.
+The frontier row uses the same per-page assumption as the [OCR and Layout chapter](../10-document-processing/01-ocr-and-layout.md#cost-and-latency-tradeoffs): ~1.7K input tokens (page image plus prompt) and ~800 output tokens, before reasoning tokens. Even at the introductory price, running every scanned page of a 100-page scan through Gemini 3.8 Flash would eat almost the whole $0.50 budget before extraction starts; at the January 2027 list price it would blow it. So the pipeline routes: every scanned page goes through the parsing VLM, and only the ~15% of pages that come back low-confidence or fail layout checks (stamps, handwriting, broken tables) escalate to the frontier VLM. MinerU 4.0 builds the same idea into its parser with four quality tiers, from model-free extraction for digital PDFs up to an "advanced" tier for hard documents. All ParseBench numbers here come from Cohere's launch post (vendor-run), so treat the 3- to 5-point gap between frontier VLMs and Cohere Parse as indicative and re-measure on your contracts.
 
 ### 2. Parallel Extractors vs Single-Pass
 
@@ -166,14 +166,14 @@ October 2026 prices, with Gemini 3.8 Flash at its January 1, 2027 list rate.
 
 | Stage | Cost per 100-page Doc |
 |-------|----------------------|
-| Parsing, scanned only: parsing VLM on all pages ($0.15) plus Gemini 3.8 Flash on ~15 hard pages (~$0.09) | $0.24 |
+| Parsing, scanned only: parsing VLM on all pages ($0.15) plus Gemini 3.8 Flash on ~15 hard pages (~$0.13) | $0.28 |
 | Section detection (GPT-6 Luna, ~50K tokens in) | $0.01 |
 | Field extraction (4 parallel on GPT-6 Luna; ~10% of documents escalate low-confidence fields to a $2 / $10 model) | $0.03 |
 | Validation | $0.01 |
-| **Total (scanned)** | **$0.29** |
+| **Total (scanned)** | **$0.33** |
 | **Total (native PDF)** | **$0.05** |
 
-Average (60% native, 40% scanned): **about $0.15 per document** (under the $0.50 target). The scanned path costs about 6x the native one, almost all of it parsing, so the cheapest lever is getting native PDFs from the source system wherever possible.
+Average (60% native, 40% scanned): **about $0.16 per document** (under the $0.50 target). The scanned path costs about 6.5x the native one, almost all of it parsing, so the cheapest lever is getting native PDFs from the source system wherever possible.
 
 ---
 

@@ -34,7 +34,7 @@ Modern architectures (LangGraph, Microsoft Agent Framework) use **Deterministic 
 - **The Pattern**: The system is hardcoded to "Pause" before a specific sensitive tool is called (e.g., `execute_purchase` or `delete_user`).
 - **The Decision**: The environment waits for a user to send an `approve` or `reject` signal.
 - **State Preservation**: The agent's reasoning state is "Frozen" in the DB until the human acts. To survive restarts and deploys, hold the pause in a durable workflow (see [Durable Execution](11-durable-execution.md)); for approvals inside an MCP tool call, the stateless 2026-07-28 revision returns `input_required` and resumes on a client retry (see [Tool Use and MCP](03-tool-use-and-mcp.md#multi-round-trip-requests-mrtr)).
-- **Gate the batch, not the click**: models now emit several actions per turn (Claude's computer-use toolset runs a batch in order and halts at the first failure), so one approval can cover a multistep consequential action. Put the confirmation before each batch that contains an irreversible step.
+- **Gate the action, not the turn**: models now emit several actions per turn (Claude's computer-use toolset runs a batch in order and halts at the first failure), so one model round trip can complete a multistep consequential action, and approving the batch as a whole means approving steps nobody looked at. Inspect every action in the batch on arrival and run the confirmation before each consequential action executes, including one in the middle of a batch; Anthropic's computer-use docs place the check before each block runs. A rejection ends the batch: answer the remaining actions as not executed so the model replans from a known state.
 
 ---
 

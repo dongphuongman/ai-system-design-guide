@@ -495,7 +495,7 @@ prefix, skip generated and vendored files, set effort per route
 ```
 
 4. **Output Format:**
-```markdown
+````markdown
 ## Review Summary
 
 ### Critical Issues (must fix)
@@ -511,7 +511,7 @@ prefix, skip generated and vendored files, set effort per route
 ### Suggestions (consider fixing)
 - **Line 78-82**: This loop could be simplified using list comprehension
 ...
-```
+````
 
 5. **Latency Strategy:**
 ```
@@ -1162,7 +1162,7 @@ Cost: extraction pass on session close is the main LLM cost;
 
 "Design the batching layer for an LLM inference service on one GPU. Users wait synchronously for results, and a batch holds at most 100 sequences. Explain how requests are admitted, grouped, scheduled and returned, then how the design changes when traffic outgrows the GPU."
 
-Interview-prep guides report variants of this prompt from Anthropic system design rounds (Exponent, September 2026; candidate-reported, not confirmed by the company). It tests whether you understand serving from the inside rather than only calling an API.
+Interview-prep guides report variants of this prompt from Anthropic system design rounds (Aced, formerly Exponent, September 2026; candidate-reported, not confirmed by the company). It tests whether you understand serving from the inside rather than only calling an API.
 
 ### Clarifying Questions to Ask
 

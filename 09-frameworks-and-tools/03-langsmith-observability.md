@@ -85,11 +85,9 @@ The cost is offset by **Developer Productivity** and **Token Efficiency**. A sin
 ---
 
 ## References
-- LangChain Team. "LangSmith: The Unified Evaluation Platform" (2025)
+- LangChain. "LangSmith Observability" docs: https://docs.langchain.com/langsmith/home
 - LangChain. "LangSmith Engine, agents, fine-tuning and trajectories" (Sep 2026): https://www.langchain.com/blog/langsmith-engine-agents-fine-tuning-trajectories
-- Rao and Callison-Burch. "JEV vs. LLMs as Rubric Judges" (arXiv 2609.29769, Sep 2026)
-- Microsoft. "Tracing and Debugging Multi-Agent Systems" (2025)
-- Weights & Biases. "Integrating LLMOps into the CI/CD Pipeline" (2024/2025)
+- Rao and Callison-Burch. "JEV vs. LLMs as Rubric Judges: Cheaper, Faster, and Wrong in the Same Places" (arXiv 2609.29769, Sep 2026): https://arxiv.org/abs/2609.29769
 
 ---
 

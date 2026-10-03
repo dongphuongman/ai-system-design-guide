@@ -1,6 +1,6 @@
 # Multi-Agent Orchestration
 
-Complex systems are rarely one agent. They are teams of specialized agents. Orchestration has matured from "Blind Managers" to **Hierarchical Supervisors**, **Dynamic Swarms**, and **Cross-Vendor Agent Networks** enabled by interoperability protocols like A2A. Gartner projects that 40% of enterprise applications will feature task-specific AI agents by end of 2026, up from under 5% in early 2025.
+Complex systems are rarely one agent. They are teams of specialized agents. Orchestration has matured from "Blind Managers" to **Hierarchical Supervisors**, **Dynamic Swarms**, and **Cross-Vendor Agent Networks** enabled by interoperability protocols like A2A. Gartner projected in August 2025 that 40% of enterprise applications will feature task-specific AI agents by the end of 2026, up from less than 5% in 2025.
 
 ## Table of Contents
 
@@ -179,7 +179,7 @@ It depends on whether I know the shape of the work before it starts. If the stag
 - Li et al. "CAMEL: Communicative Agents for 'Mind' Exploration of Large Language Model Society" (2023). https://arxiv.org/abs/2303.17760
 - OpenAI. "Swarm" (experimental library, 2024), succeeded by the OpenAI Agents SDK (2025)
 - A2A Project. "Agent2Agent Protocol Specification v1.0.1" (2026). https://github.com/a2aproject/A2A
-- Gartner. "Predicts 2026: AI Agent Market" (2025)
+- Gartner. "Gartner Predicts 40% of Enterprise Apps Will Feature Task-Specific AI Agents by 2026, Up from Less Than 5% in 2025" (press release, August 26, 2025). https://www.gartner.com/en/newsroom/press-releases/2025-08-26-gartner-predicts-40-percent-of-enterprise-apps-will-feature-task-specific-ai-agents-by-2026-up-from-less-than-5-percent-in-2025
 - Andrew Ng. "Agentic Design Patterns" (The Batch, 2024)
 - GitHub Changelog. "Dynamic workflows in Copilot CLI and the Copilot app" (October 1, 2026). https://github.blog/changelog/2026-10-01-dynamic-workflows-in-copilot-cli-and-the-copilot-app
 

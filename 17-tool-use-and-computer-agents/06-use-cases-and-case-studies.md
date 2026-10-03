@@ -1,6 +1,6 @@
 # Use Cases and Case Studies for Tool-Using Agents
 
-Tool-using AI agents have moved from demo to production. The global AI agents market reached $7.8 billion in 2025 and is projected to exceed $10.9 billion in 2026 (45% CAGR). Gartner projects that 40% of enterprise applications will embed task-specific AI agents by end of 2026, up from fewer than 5% in 2025, and separately predicts that over 40% of agentic AI projects will be canceled by the end of 2027 due to rising costs, unclear business value, or inadequate risk controls. This chapter covers the categories that are working, the ones that are not, and three detailed case studies you can reference in system design interviews.
+Tool-using AI agents have moved from demo to production. The global AI agents market reached $7.8 billion in 2025 and is projected to exceed $10.9 billion in 2026. Gartner projected in August 2025 that 40% of enterprise applications will embed task-specific AI agents by the end of 2026, up from fewer than 5% in 2025, and in June 2025 predicted that over 40% of agentic AI projects will be canceled by the end of 2027 due to rising costs, unclear business value, or inadequate risk controls. This chapter covers the categories that are working, the ones that are not, and three detailed case studies you can reference in system design interviews.
 
 > [!NOTE]
 > The three detailed case studies below describe unnamed organizations and cite no public source. Treat their figures as illustrations of the pattern, not as benchmarks. Named, vendor-reported results appear in the category sections and failure cases.
@@ -557,8 +557,8 @@ For operations, I would budget per agent per day with a hard cap enforced by the
 
 ## References
 
-- Gartner. "Predicts 2025: AI Agents Transform Work" (2025)
-- Gartner. Press release on agentic AI project cancellations through 2027 (June 2025)
+- Gartner. "Gartner Predicts 40% of Enterprise Apps Will Feature Task-Specific AI Agents by 2026, Up from Less Than 5% in 2025" (press release, August 26, 2025)
+- Gartner. "Gartner Predicts Over 40% of Agentic AI Projects Will Be Canceled by End of 2027" (press release, June 25, 2025)
 - Anthropic. "How Anthropic's sales team rebuilt inbound with Claude Managed Agents" (September 30, 2026)
 - Anthropic. "Agents you can coach: how Asana builds human-agent teams with Claude" (September 2026)
 - OpenAI. "Introducing dots" (September 29, 2026)

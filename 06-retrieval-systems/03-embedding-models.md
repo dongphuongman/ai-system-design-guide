@@ -59,10 +59,10 @@ Storing `float32` vectors is expensive. Production indexes lean heavily on **qua
 | **Cohere Embed 5** (`embed-v5.0-pro` / `-fast`) | Cohere | September 30, 2026. Text, image and fused text+image; Pro and Fast share one space; float/int8/binary; $0.12 / $0.08 per 1M text tokens | 128K |
 | **Voyage 4** (`voyage-4-large` / `voyage-4` / `voyage-4-lite`) | Voyage AI (MongoDB) | January 15, 2026. One shared space across sizes; $0.12 / $0.06 / $0.02 per 1M; open-weight `voyage-4-nano` | 32K |
 | **voyage-code-4** | Voyage AI | August 13, 2026. Trained on natural-language-to-code pairs mined from pull requests, for agents that search from a bug symptom; $0.12 per 1M | 32K |
-| **Voyage-Multimodal-3.5** | Voyage AI | Interleaved text and images, retrieval-tuned | 32K |
+| **voyage-multimodal-3.5** | Voyage AI | January 15, 2026. Interleaved text, images and video; 256 to 2,048 dims; float, int8 and binary output | 32K |
 | **Nemotron 3 Embed 8B / 1B** | NVIDIA (open weights, OpenMDW-1.1) | July 16, 2026. 8B: 4,096 sliceable dims, RTEB Multilingual #1 at 78.5 (vendor-reported); 1B: 2,048 dims, NVFP4 variant | 32,768 (8B) |
 | **Qwen3-Embedding-8B** | Open weights | Instruction-tuned, long-doc strength; 70.58 MTEB Multilingual mean, but the top spot is now contested | 32K |
-| **Llama-Embed-Nemotron-8B** | NVIDIA | Strong multilingual scores, open weights, 4,096 dims | 32K |
+| **Llama-Embed-Nemotron-8B** | NVIDIA | October 2025. Strong multilingual scores, 4,096 dims; weights are licensed for non-commercial and research use only | 32K |
 | **Cohere Embed v4** | Cohere | Multimodal (text + image), Matryoshka, binary quantization; still available, no deprecation announced | 128k |
 | **OpenAI text-embedding-3-large** | OpenAI | Matryoshka via `dimensions`, 3,072 dims, $0.13 per 1M, float output only. OpenAI has shipped no newer embedding model; there is no "text-embedding-4" | 8,192 |
 | **BGE-M3** | Open Source | Multilingual, multi-granularity (dense + sparse + late-interaction) | 8k |
@@ -92,7 +92,7 @@ The constraint: shared spaces are vendor-defined. You cannot mix a Voyage index 
 
 Text-only RAG silently throws away the charts, tables, diagrams, and layout signal that often hold the answer. Modern stacks treat pages, screenshots, and figures as first-class retrieval objects:
 
-- **Unified vision-text embeddings**: Cohere Embed 5, Voyage-Multimodal-3.5 and gemini-embedding-2 each map images and text into a single vector space, so you can query "where is the emergency shutoff valve?" against schematics. On ViDoRe V3, Cohere reports Embed 5 Pro 85.8, Fast 84.5, voyage-4-large 83.7, Gemini Embedding 2 83.2 and text-embedding-3-large 75.5 (vendor-reported). gemini-embedding-2 also covers video and audio in the same space.
+- **Unified vision-text embeddings**: Cohere Embed 5, voyage-multimodal-3.5 and gemini-embedding-2 each map images and text into a single vector space, so you can query "where is the emergency shutoff valve?" against schematics. On ViDoRe V3, Cohere reports Embed 5 Pro 85.8, Fast 84.5, voyage-4-large 83.7, Gemini Embedding 2 83.2 and text-embedding-3-large 75.5 (vendor-reported). voyage-multimodal-3.5 and gemini-embedding-2 also take video, and gemini-embedding-2 adds audio, in the same space.
 - **Page-as-image with late interaction**: ColPali, ColQwen2.5, and ColNomic embed each page render directly, skipping fragile OCR and preserving visual hierarchy.
 - **CLIP-family models**: Still useful for image-heavy catalogs (e-commerce, media) where text-image alignment is the core signal.
 

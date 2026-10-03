@@ -1008,7 +1008,7 @@ toxicity_guard.validate(response_text)  # raises on toxic sentences
 | Layer | Examples | Use it for |
 |-------|----------|------------|
 | In-process library | Guardrails AI validators, NeMo Guardrails rails | Schema, topic, and format checks with no extra network hop |
-| Self-hosted safety classifier | Llama Guard 4 12B (multimodal, derived from Llama 4) | High-volume content safety on your own GPUs, with your own thresholds |
+| Self-hosted safety classifier | Llama Guard 4 12B (multimodal, derived from Llama 4); Mistral Shieldstral 1.0 3B (Apache 2.0, text and image, scores content against a natural-language policy you pass at inference time) | High-volume content safety on your own GPUs, with your own thresholds; a policy-adaptive classifier changes policy without retraining |
 | Hosted moderation endpoint | OpenAI `omni-moderation-latest` | Content safety without hosting a classifier, where sending content to the provider is acceptable |
 | Agent SDK hooks | openai-agents 0.22.1 (September 8, 2026) added MCP server-wide guardrails | Checks on tool calls and tool results inside an agent loop |
 | Provider safeguards | Claude safety classifiers, gated cyber tiers | Not yours to tune: monitor, budget, and route around them |
@@ -1122,6 +1122,7 @@ The balance is: enough guardrails to be safe, not so many that the bot is useles
 - Guardrails AI: https://github.com/guardrails-ai/guardrails
 - OpenAI Moderation: https://developers.openai.com/api/docs/guides/moderation
 - Llama Guard: https://ai.meta.com/research/publications/llama-guard/
+- Mistral Shieldstral 1.0 3B model card: https://huggingface.co/mistralai/Shieldstral-1.0-3B
 - OWASP LLM Top 10: https://genai.owasp.org/llm-top-10/
 - Anthropic, content moderation guide: https://platform.claude.com/docs/en/about-claude/use-case-guides/content-moderation
 - Anthropic, refusals and fallback: https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback

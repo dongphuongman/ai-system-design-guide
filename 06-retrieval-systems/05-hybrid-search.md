@@ -594,7 +594,7 @@ The decision is empirical. I would A/B test hybrid vs dense on my actual query d
 ### Q: Why is Reciprocal Rank Fusion (RRF) safer than "Simple Score Addition"?
 
 **Strong answer:**
-Simple score addition is dangerous because vector scores (e.g., Cosine Similarity: 0.0 to 1.0) and keyword scores (e.g., BM25: 0 to infinity) use completely different scales. An extremely high BM25 score for a lucky keyword match could "drown out" 10 highly relevant semantic matches. RRF ignores the absolute scores and only cares about the relative order (rank). This makes it mathematically robust to outliers and "score-drift" in different retrieval engines.
+Simple score addition is dangerous because vector and keyword scores use completely different scales. Cosine similarity is bounded to -1 to 1, and many text embedders squeeze it into a narrow positive band; BM25 is unbounded and shifts with corpus statistics and query length. An extremely high BM25 score for a lucky keyword match could "drown out" 10 highly relevant semantic matches. RRF ignores the absolute scores and only cares about the relative order (rank). That makes it insensitive to outliers and to score drift between retrieval engines.
 
 ### Q: When would you choose SPLADE over the standard BM25 + Dense Hybrid approach?
 

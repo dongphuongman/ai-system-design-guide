@@ -44,7 +44,7 @@ The tiers differ on more than purpose. Read pattern, write pattern, latency budg
 | **Freshness expectation** | Token-fresh; lost at session end | Hours to months; tolerates staleness | Should reflect *current* state; staleness is a bug | Slow-changing; updates are deliberate |
 | **Storage tech** | KV cache in HBM (vLLM PagedAttention blocks) | Vector DB (Pinecone, Weaviate, Qdrant), append-only log | Knowledge graph (Neo4j, Graphiti), KV store, bitemporal relational rows | Filesystem (Claude `/memories/`, Skills as `SKILL.md`), prompt registry, fine-tuned LoRA |
 | **Query semantics** | Position + attention | Similarity + recency + importance (Park et al. weighted) | Entity-relation match, structured query, bitemporal filter | Task-signature match, often filename or tag lookup |
-| **Eviction** | Sliding window, LRU on KV block hash | Decay scoring, consolidation into L3, archival to cold storage | Supersession via temporal `valid_to`; explicit deletion for GDPR | Manual deprecation, A/B against newer skill, version pinning |
+| **Eviction** | Sliding window, LRU on KV block hash | Decay scoring, consolidation into L3, archival to cold storage | Supersession by closing the old fact's validity (`invalid_at`); explicit deletion for GDPR | Manual deprecation, A/B against newer skill, version pinning |
 
 **What this means in practice:** when a fact arrives, the architecture question is not "should we remember it?" but "*at which tier*, with which freshness contract, and with which eviction rule?" Picking the wrong tier produces predictable failure modes (a session preference promoted to L3 leaks across sessions; a stable user fact left in L2 gets evicted in two weeks). See [Tradeoffs: Where Does Fact X Go?](#tradeoffs-where-does-fact-x-go) below.
 
@@ -106,7 +106,7 @@ The first-order decision is not "which tier" but *"who pays the cost of being wr
 
 | Fact / concern | Tier | Reasoning |
 |---|---|---|
-| "The user's API rate limit is 1000 req/min" | L3 with bitemporal `valid_to` | Tenant-scoped fact; queryable by entity; must support supersession. Not L4: it's data, not procedure. |
+| "The user's API rate limit is 1000 req/min" | L3 with bitemporal validity (`valid_at` / `invalid_at`) | Tenant-scoped fact; queryable by entity; must support supersession. Not L4: it's data, not procedure. |
 | "Steps to deploy our service" | L4 as a versioned skill | Multi-step recipe with conditional branches. Skills compose; semantic triples do not. |
 | "The agent's last failed attempt at this task" | L2 raw, *then* reflect a lesson into L4 if generalizable | Raw trajectory belongs in episodic; the generalized lesson ("never run migrations during peak hours") earns a Reflexion-style write to L4. |
 | "User prefers terse responses" | L3 | Stable preference, queryable by `user_id`, single triple. |
@@ -154,7 +154,7 @@ The named systems differ less on "what they store" and more on *write discipline
 | **[Mem0](https://github.com/mem0ai/mem0)** | Cross-session personalization at scale | Since v2.0.0 (April 16, 2026): single-pass, ADD-only extraction (one LLM call per `add()`, hash dedup, no update or delete pass) and hybrid retrieval that fuses semantic similarity, BM25, and entity boosting into one score. Entity links live in a parallel collection inside your existing vector store, which let Mem0 delete its Neo4j, Memgraph, Kuzu, and Apache AGE graph drivers. Reports 92.5 on LoCoMo and 94.4 on LongMemEval after the redesign ([benchmarks](https://mem0.ai/blog/ai-memory-benchmarks-in-2026)); its 2025 paper reported a 26% relative gain over OpenAI's built-in memory on an LLM-judge metric (all vendor-reported). SDK v2.2.1 (September 25). | 8K char per-memory cap (not for documents); cloud-first posture creates data sovereignty friction; open-source extraction is append-only, so merging and supersession moved to the paid Dream feature (Pro and Enterprise only, since August 4). |
 | **[Letta (formerly MemGPT)](https://github.com/letta-ai/letta)** | Long-running autonomous agents where coherence is the product | Archived its MemGPT-era server on August 16, 2026; active development is the letta-code harness and the TypeScript Agent SDK. All agents now use **MemFS**: long-term memory is a git repository of Markdown files with YAML frontmatter, edited with ordinary file tools. Root files load into the system prompt every turn; directories with their own `MEMORY.md` index stay out of context until the agent navigates to them. | No vector index by default (keyword search via an optional mod), so recall depends on a well-organized tree; teams on the old core / recall / archival paging API must migrate. |
 | **[Anthropic Memory Tool + Skills](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool)** | Filesystem-mounted L3 and L4 in one substrate | Memory at `/memories/`; Skills as `SKILL.md` packages plus optional scripts (out of beta on the Claude API since August 19, 2026); Managed Agents mount memory at `/mnt/memory/` per session with immutable versioning (April 23, 2026 GA), and since August 19 memory stores also sync into self-hosted sandboxes. The Dreams research preview consolidates a store offline into a new output store. | Filesystem semantics push complexity to the agent (the agent must structure its own directories well). |
-| **[Zep + Graphiti](https://github.com/getzep/graphiti)** | Temporal facts where "when did this become true?" matters | Open-source temporal knowledge graph. Each edge has `valid_from` / `valid_to` / `invalid_at`. Beats MemGPT 94.8% to 93.4% on DMR. Bitemporal queries enable "what did we believe on March 12?" vs "what is true now?" | Heavier write path (graph extraction, dedup, conflict resolution) than vector-only stores. |
+| **[Zep + Graphiti](https://github.com/getzep/graphiti)** | Temporal facts where "when did this become true?" matters | Open-source temporal knowledge graph. Each fact edge carries two timelines: `valid_at` / `invalid_at` (when the fact was true in the world) and `created_at` / `expired_at` (when the graph recorded it and when it was superseded). Beats MemGPT 94.8% to 93.4% on DMR. Bitemporal queries enable "what did we believe on March 12?" vs "what is true now?" | Heavier write path (graph extraction, dedup, conflict resolution) than vector-only stores. |
 | **[LangMem + LangGraph](https://langchain-ai.github.io/langmem/)** | When you want all four memory types with LangGraph orchestration | Supports episodic, semantic, *and* procedural. Procedural memory in LangMem lets the agent update its own system prompt based on feedback. Background extraction runs out-of-band. | LangGraph-coupled; less attractive if you are not on the LangChain stack. |
 | **[OpenAI ChatGPT Memory](https://openai.com/index/memory-and-new-controls-for-chatgpt/)** | Consumer-grade chat continuity, not production-grade agent memory | Two-layer architecture: explicit "saved memories" plus lightweight conversation summaries pre-injected into context. Skips a retrieval step at inference for low latency. | Loses precision vs Mem0-style retrieval. No fine-grained programmatic API for enterprise integration. |
 | **Cursor / Windsurf** | Codebase-aware L2/L3 for software engineering agents | Codebase indexed on project open; `@`-mentions for explicit context. Windsurf "Memories" learns architecture patterns over ~48 hours of use. | Domain-locked to code. Not a general-purpose memory layer. |
@@ -189,7 +189,7 @@ Untrusted input gets written to L3/L4 and replayed later as authoritative. [MINJ
 Yesterday's preference vs today's. The classic "user said dark mode last month but uses light mode now."
 
 **Mitigations:**
-- **Bitemporal storage** (Zep/Graphiti pattern): every fact has `valid_from`, `valid_to`, `invalid_at`.
+- **Bitemporal storage** (Zep/Graphiti pattern): every fact carries `valid_at` / `invalid_at` (when it was true) and `created_at` / `expired_at` (when the system recorded and retired it).
 - **TTL on session-scoped preferences** so they auto-expire.
 - **Decay weighting** in retrieval scoring.
 - **Explicit re-confirmation** prompts for high-stakes facts older than N days.
@@ -200,7 +200,7 @@ User said X, now says Y. Three different conflict types deserve different respon
 
 | Conflict type | Right response |
 |---|---|
-| Temporal update ("I moved to Berlin") | Supersede the old fact with `valid_to = now` |
+| Temporal update ("I moved to Berlin") | Supersede the old fact: its `invalid_at` becomes the new fact's `valid_at`, and `expired_at` is set to now |
 | Correction ("I never said that") | Retract with audit trail |
 | Preference change ("I want concise responses now") | Add new fact; let decay handle the old |
 | Outright contradiction (no obvious resolution) | Ask the user; never silently overwrite |

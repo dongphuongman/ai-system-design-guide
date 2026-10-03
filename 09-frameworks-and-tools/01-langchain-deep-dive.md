@@ -187,11 +187,11 @@ The chain was almost certainly getting structured output by **forcing a tool cal
 ---
 
 ## References
-- LangChain. "The LangChain Expression Language Specification" (2025)
+- LangChain. `RunnableSequence` reference (LCEL composition with the `|` operator): https://reference.langchain.com/python/langchain-core/runnables/base/RunnableSequence
 - LangChain. "Release policy" (LangChain 0.3 and LangGraph 0.4 maintenance until December 2026): https://docs.langchain.com/oss/python/release-policy
 - LangChain. `langchain==1.4.0` release notes (MCP in core, Sep 3, 2026): https://github.com/langchain-ai/langchain/releases/tag/langchain%3D%3D1.4.0
 - Anthropic. "What's new in Claude Sonnet 5.5" (forced `tool_choice` returns 400): https://platform.claude.com/docs/en/models/sonnet-5-5/whats-new-sonnet-5-5
-- Harrison Chase. "The Future of AI Orchestration" (2024 podcast/post)
+- LangChain. "LangChain and LangGraph Agent Frameworks Reach v1.0 Milestones" (Oct 22, 2025): https://www.langchain.com/blog/langchain-langgraph-1dot0
 
 ---
 

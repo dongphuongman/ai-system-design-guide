@@ -77,7 +77,7 @@ flowchart TB
 
 ## Choosing an Architecture
 
-Pick a **chained pipeline** when you need verbatim language (consent scripts, legal disclosures, payment terms), per-component audit and redaction, a domain-specific STT model, or the cheapest per-minute path at high volume. It remains the default wherever an auditor will read the transcript.
+Pick a **chained pipeline** when you need verbatim language (consent scripts, legal disclosures, payment terms), per-component audit and redaction, a domain-specific STT model, or a self-hosted stack at very high volume (open STT and TTS on your own GPUs can undercut hosted per-minute rates, but first price it against Gemini 3.8 Live's roughly $0.06 for the 5-minute example call below). It remains the default wherever an auditor will read the transcript.
 
 Pick a **single S2S model** when the task is shallow and naturalness matters most: companions, coaching, translation, simple lookups. Price is no longer the objection it was: at $3 / $12 per 1M audio tokens, Gemini 3.8 Live works out to about $0.005 per minute of input audio and $0.018 per minute of output audio. On the Realtime API, re-sending the conversation makes long calls more expensive per minute. On any token-billed S2S model, read the usage metadata from a long test call before trusting a per-minute conversion.
 
@@ -93,7 +93,7 @@ Pick a **duplex front end with a backend** when you already have a text agent wi
 
 | Layer | Current options (October 2026) | Notes |
 |-------|--------------------------------|-------|
-| **Orchestration** | LiveKit Agents 1.8.3 and Pipecat 1.12.0 (open source); Vapi, Retell, Bland, ElevenLabs Agents, Deepgram Voice Agent (managed) | LiveKit puts nine S2S providers behind one interface, so "few S2S vendors" no longer holds |
+| **Orchestration** | LiveKit Agents 1.8.4 and Pipecat 1.12.0 (open source); Vapi, Retell, Bland, ElevenLabs Agents, Deepgram Voice Agent (managed) | LiveKit puts nine S2S providers behind one interface, so "few S2S vendors" no longer holds |
 | **S2S and duplex models** | `gpt-live-1`, `gpt-realtime-2.1` / `-2.1-mini`, `gemini-3.8-live` / `-extended-thinking`, Nova 2 Sonic, `grok-voice-think-fast-2.0`; Azure Voice Live (Realtime-compatible, serves `gpt-realtime-2.1`, does not list `gpt-live-1`) | Open full duplex: NVIDIA PersonaPlex (7B, built on Moshi; vendor-reported 0.170 s turn-taking) |
 | **Streaming STT** | Deepgram Flux, AssemblyAI Universal-3.5 Pro Realtime, ElevenLabs Scribe v2 Realtime, OpenAI `gpt-live-transcribe`, Gemini 3.5 Transcribe Live, Cartesia Ink-2; self-hosted NVIDIA `nemotron-3.5-asr-streaming-0.6b` | `whisper-1` and the `gpt-4o-*-transcribe` models shut down February 26, 2027 |
 | **Turn detection** | LiveKit audio `TurnDetector`, Pipecat Smart Turn v3, STT-native end of turn (Deepgram Flux, Cartesia Ink-2) | LiveKit's transcript-based detector is deprecated |
@@ -162,7 +162,7 @@ A per-turn budget for a tuned, fully streaming cascade:
 The levers, in order of impact:
 
 - **Stream everything.** Partial transcripts, token streaming, and chunked TTS that starts on the first clause.
-- **Tune endpointing.** An audio turn detector instead of a long silence timeout, plus eager end of turn with speculative generation if you can afford the extra LLM calls. In Pipecat's example, endpointing and TTS are each 20% to 35% of the turn.
+- **Tune endpointing.** An audio turn detector instead of a long silence timeout, plus eager end of turn with speculative generation if you can afford the extra LLM calls. In Pipecat's example, endpointing is about 19% of the turn and TTS about 34%.
 - **Keep reasoning off the speaking path.** Acknowledge immediately, then delegate. Reasoning effort is now a latency dial: `gpt-realtime-2.1` exposes it, and Pipecat defaults GPT-5.x voice calls to effort `none`. Check that your backend can actually go low: GPT-6 Astra has no `none` effort, Claude Opus 5.5 cannot disable thinking, and Sonnet 5.5's floor is `between_tools`.
 - **Choose TTS by time to first audio at your concurrency.** Voxtral-4B-TTS measures 70 ms at concurrency 1 and 552 ms at concurrency 32 on an H200 (vendor-reported), so a single-stream number is not a capacity plan.
 - **Count connection setup.** It lands on the first turn. LiveKit 1.8.2 cut agent startup by up to 800 ms, and OpenAI's Realtime API supports WARP, an IETF-draft bundle that cuts WebRTC round trips (mostly native clients today, since browsers support it only partially).
@@ -287,7 +287,7 @@ Note which backend produced a duplex score: the same voice layer scores very dif
 | **EU Code of Practice on marking** (final June 10, 2026) | Voluntary route to compliance | At least two marking layers (signed metadata plus an imperceptible watermark); audio disclaimers are allowed for audio-only content |
 | **US FCC 24-17** (February 2024) | In force | AI-generated voices are "artificial or prerecorded voice" under the TCPA, so outbound AI calls need prior express consent (written consent for telemarketing); keep a consent ledger per call |
 | **FCC 24-84** (August 2024) | Proposed rule; no final rule found | Would require AI disclosure when collecting consent and at the start of each call; disclose anyway |
-| **FCC consent revocation** (vote reported September 30, 2026) | Reported in trade press; read the final order | Per-category opt-outs, including spoken or key-press opt-outs, so the agent must recognize "stop calling me about X" |
+| **FCC consent revocation** (adopted September 30, 2026) | Adopted; effective 30 days after Federal Register publication (not yet published as of early October 2026) | Replaces the 2024 revoke-all rule: a caller may limit an opt-out to the category of informational call it targets, but a telemarketing opt-out still ends all telemarketing. A caller may make one method exclusive (for a voice agent, an automated voice or key-press opt-out) only if the call discloses it clearly and conspicuously. Otherwise any reasonable request counts, so the agent must recognize spoken opt-outs and log their scope |
 | **California AB 2905** | Operative January 1, 2025 | A live natural voice must disclose an AI-generated voice before an autodialed message plays |
 | **Texas TRAIGA** | In effect January 1, 2026 | Disclosure duties for government agencies and health-care providers; voiceprints are biometric identifiers |
 | **Companion-chatbot laws** | Enacted in California (SB 243), New York, New Hampshire, and Hawaii; laws in eight more states take effect during 2027 (Connecticut, Oregon, and Washington on January 1) | AI disclosure and minor protections if your voice product is a companion |

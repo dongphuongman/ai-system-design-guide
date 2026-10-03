@@ -561,14 +561,14 @@ response = client.messages.create(  # GA: no beta namespace or beta header
 
 **Migration trap:** Claude Opus 5.5 and Sonnet 5.5 return HTTP 400 for the older `computer_20251124` tool on the Claude API and Google Cloud (Bedrock still accepts it), and samples that target `claude-3-7-sonnet-20250219` or `claude-sonnet-4-20250514` point at retired models.
 
-**Batch actions move the human gate.** Claude can now return several computer `tool_use` blocks in one turn. The executor runs them in order and halts at the first failure, answering each later block with `is_error` and "Not executed: an earlier computer action in this turn failed." One model round trip can therefore complete a multistep consequential action, which cuts per-step latency and cost but means confirmation belongs before each batch, not before each click.
+**Batch actions move the human gate.** Claude can now return several computer `tool_use` blocks in one turn. The executor runs them in order and halts at the first failure, answering each later block with `is_error` and "Not executed: an earlier computer action in this turn failed." One model round trip can therefore complete a multistep consequential action, which cuts per-step latency and cost but means a confirmation placed between model turns arrives too late. Anthropic's docs put the human check before each block runs: inspect every action in the batch when it arrives, and pause before each consequential one executes, including one in the middle of a batch. Treat a rejection like a failure: return `is_error` for that block, answer the rest of the batch with the halt text, and let the model replan.
 
 **Element refs are the reliability lever for web tasks.** In the browser toolset, `read_page` returns the accessibility tree with references such as `[ref_2]`, and clicks, form input, and uploads can target refs instead of coordinates. Refs survive layout shifts but are scoped to a tab and go stale after navigation. Anthropic scans returned page text and screenshots for prompt injection, and its security guidance doubles as a least-privilege checklist: a fresh browser profile with no credentials, a network-layer domain allowlist that blocks loopback, link-local, and private ranges, http/https URLs only, and the opt-in members (`javascript_exec`, `file_upload`, `read_console`, `read_network`) left off unless the task needs them.
 
 **Production safety rules for computer-use:**
 1. Always run in a sandboxed VM (Docker + VNC, or E2B cloud)
 2. Screenshot-validate critical state before destructive actions
-3. Use HITL (Human-in-the-Loop) for irreversible actions (file deletion, form submission), gated per batch
+3. Use HITL (Human-in-the-Loop) for irreversible actions (file deletion, form submission), checked before each such action executes, even mid-batch
 4. Cap runaway loops in the harness, not the model: a maximum iteration count plus a spend ceiling enforced outside the agent (Claude Managed Agents sessions accept a hard budget that pauses with `budget_reached`). Anthropic's docs estimate roughly 1,000 to 1,800 input tokens per screenshot, so long sessions are input-dominated; resize screenshots to 2000 px or less per side, or keep 20 or fewer images per request
 
 ---
