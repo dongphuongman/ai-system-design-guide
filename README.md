@@ -31,7 +31,7 @@
 
 A practical, continuously updated guide to AI system design, RAG architectures, LLM engineering, agentic AI, MCP and A2A protocols, and AI engineering interview preparation. Covers production patterns, model selection, evaluation, and real-world case studies from staff-level interviews.
 
-**New here?** Jump to the [128-question Interview Bank](00-interview-prep/01-question-bank.md), the [RAG Fundamentals chapter](06-retrieval-systems/01-rag-fundamentals.md), or pick the [right LLM for production](02-model-landscape/01-model-taxonomy.md).
+**New here?** Jump to the [147-question Interview Bank](00-interview-prep/01-question-bank.md), the [RAG Fundamentals chapter](06-retrieval-systems/01-rag-fundamentals.md), or pick the [right LLM for production](02-model-landscape/01-model-taxonomy.md).
 
 ---
 
@@ -97,7 +97,7 @@ flowchart TD
 | August 2026 models (Claude Opus 5, Sonnet 5, Fable 5, GPT-5.6 Sol/Terra/Luna, GPT-5.6-Cyber, Gemini 3.7 Flash, Grok 4.6, DeepSeek V4, Kimi K3, Qwen3.8, GLM-5.3, Muse Glimmer, Inkling) | Stuck on GPT-4 |
 | MCP 2.0, A2A v1.0, OpenClaw, Computer Use, Agentic RAG, ColBERT, latent reasoning, MoE serving | Does not exist |
 | Real pricing with August 2026 verification dates | Already wrong |
-| Staff-level interview Q&A (128 questions through August 2026) + Job Market Trends | Generic questions |
+| Staff-level interview Q&A (147 questions through September 2026, including Voice AI) + Job Market Trends | Generic questions |
 
 **Quick model picker (August 2026):** Claude Fable 5 for the capability ceiling ($10/$50 per 1M), Claude Opus 5 for long-horizon agentic coding at $5/$25, Claude Sonnet 5 as the production default ($2/$10, now permanent), GPT-5.6 Terra for general production ($2/$12) with Luna at $0.20/$1.20 for volume tiers, Gemini 3.7 Flash at a half-price $0.75/$3.75 through year-end, Kimi K3 or Muse Glimmer for open weights. Note that DeepSeek V4 stops being the automatic cheap answer on August 16, when prices rise 3x to 12x and move to peak and off-peak billing. Full breakdown in [Model Taxonomy](02-model-landscape/01-model-taxonomy.md).
 
@@ -107,7 +107,7 @@ flowchart TD
 
 **This guide IS:**
 - A staff-level reference for designing production AI systems (RAG, agents, MCP, eval pipelines, multi-tenant isolation).
-- An interview-prep companion with 128 real questions, answer frameworks with a worked mock transcript, and nine whiteboard exercises through August 2026.
+- An interview-prep companion with 147 real questions (including a Voice AI set), answer frameworks with a worked mock transcript, and ten whiteboard exercises through September 2026.
 - A living document tracking new model releases, protocol changes, and emerging patterns as they ship.
 - Opinionated about tradeoffs: latency vs cost, accuracy vs faithfulness, single-agent vs multi-agent.
 - Free, MIT-licensed, and open to PRs from practitioners.
@@ -123,7 +123,7 @@ flowchart TD
 ## 📖 Guide Structure
 
 ```
-├── 00-interview-prep/           # Questions (128), frameworks, exercises, job-market trends (August 2026)
+├── 00-interview-prep/           # Questions (147), frameworks, exercises, job-market trends (October 2026)
 ├── 01-foundations/              # Transformers, attention, embeddings
 ├── 02-model-landscape/          # Claude Opus 5, Sonnet 5, Fable 5, GPT-5.6, Gemini 3.x, DeepSeek V4, Kimi K3, Inkling, Llama 4
 ├── 03-training-and-adaptation/  # Fine-tuning, LoRA, DPO, distillation, RLVR/GRPO
@@ -259,7 +259,7 @@ This guide gives you **concrete patterns**, **real tradeoffs**, and **production
 AI system design is the discipline of architecting production-grade systems built around LLMs, retrieval, agents, and evaluation. It covers model selection, RAG pipelines, agent orchestration, memory, observability, and safety. See [LLM Internals](01-foundations/01-llm-internals.md) and [AI Design Patterns](15-ai-design-patterns/) to get oriented.
 
 ### How do I prepare for an AI engineering interview?
-Start with the [Question Bank](00-interview-prep/01-question-bank.md) (128 questions through August 2026), then practice with [Answer Frameworks](00-interview-prep/02-answer-frameworks.md) and [Whiteboard Exercises](00-interview-prep/04-whiteboard-exercises.md). Most senior interviews test RAG design, agent debugging, multi-tenant isolation, and cost/latency tradeoffs, all covered in the [Case Studies](16-case-studies/). Before a real loop, do at least one timed mock with someone who will interrupt and push back; you can book one with Om on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya).
+Start with the [Question Bank](00-interview-prep/01-question-bank.md) (147 questions through September 2026), then practice with [Answer Frameworks](00-interview-prep/02-answer-frameworks.md) and [Whiteboard Exercises](00-interview-prep/04-whiteboard-exercises.md). Most senior interviews test RAG design, agent debugging, multi-tenant isolation, and cost/latency tradeoffs, all covered in the [Case Studies](16-case-studies/). Before a real loop, do at least one timed mock with someone who will interrupt and push back; you can book one with Om on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya).
 
 ### What is RAG (Retrieval-Augmented Generation)?
 RAG is a pattern where an LLM retrieves relevant context from an external knowledge source (vector DB, search index, graph) before generating an answer, reducing hallucinations and grounding responses in your data. The full pipeline is covered in [RAG Fundamentals](06-retrieval-systems/01-rag-fundamentals.md) and scaled in [Production RAG at Scale](06-retrieval-systems/14-production-rag-at-scale.md).

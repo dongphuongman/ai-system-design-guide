@@ -1,8 +1,8 @@
 # AI System Design Interview Preparation
 
-Interview prep for senior and staff AI engineering roles: 128 system design questions, answer frameworks with a worked mock-interview transcript, common pitfalls, nine whiteboard exercises, behavioral prep, a quick-answer FAQ, and August 2026 hiring trends.
+Interview prep for senior and staff AI engineering roles: 147 system design questions (including a dedicated Voice AI set), answer frameworks with a worked mock-interview transcript, common pitfalls, ten whiteboard exercises, behavioral prep, a quick-answer FAQ, and October 2026 hiring trends.
 
-> **What's new (August 2026):** the question bank gained six August-2026 questions (rebuilding cost models after the first major inference price increase, capability-tiered access control, coding-agent supply-chain defense after the Shai-Hulud worm, reviewing agent plugins, securing a multi-tenant MCP server on the stateless spec, and shipping synthetic-content provenance now that EU and California transparency rules are enforceable) and now runs continuously Q1-Q128.
+> **What's new (October 2026):** the question bank gained seven September-2026 questions (operating an agent on a model rated Critical for cyber, full-duplex voice front ends that delegate to a backend model, providers removing sampling parameters and forced tool calls, managed agent platforms, reading benchmark claims against public leaderboards, open-weight license gates, and patching a self-hosted inference stack) plus a new twelve-question [Voice AI](01-question-bank.md#voice-ai-questions) section covering architecture choice, latency budgets, turn-taking on phone audio, per-minute cost, evaluation, and calling compliance. The bank now runs continuously Q1-Q147, and the whiteboard set gained a tenth exercise on inference batching.
 
 ## Before You Start
 
@@ -37,7 +37,11 @@ mindmap
       Answer Frameworks
       Whiteboard exercises
     Staff or Principal
-      Advanced sets Q50 to Q128
+      Advanced sets Q50 to Q135
+    Voice AI roles
+      Voice AI set Q136 to Q147
+      Latency and telephony
+      Calling compliance
       Behavioral STAR-L
       Eval and memory exercises
     Applied Scientist
@@ -54,12 +58,12 @@ mindmap
 
 | File | Purpose |
 |------|---------|
-| [01-question-bank.md](01-question-bank.md) | 128 real interview questions (Q1-Q128, continuously numbered) grouped by topic, with model answers and follow-ups (through August 2026). |
+| [01-question-bank.md](01-question-bank.md) | 147 real interview questions (Q1-Q147, continuously numbered) grouped by topic, with model answers and follow-ups (through September 2026), including a twelve-question Voice AI section. |
 | [02-answer-frameworks.md](02-answer-frameworks.md) | Five structured answer frameworks (SPIDER, ETA, tradeoff, debugging, STAR-L) plus a worked 45-minute SPIDER mock-interview transcript. |
 | [03-common-pitfalls.md](03-common-pitfalls.md) | Patterns that kill staff-level offers: hand-waving on tradeoffs, missing observability, ignoring failure modes. |
-| [04-whiteboard-exercises.md](04-whiteboard-exercises.md) | Nine system design exercises with worked solutions, including evaluation pipeline design and agent memory. The closest simulation of a real loop. |
+| [04-whiteboard-exercises.md](04-whiteboard-exercises.md) | Ten system design exercises with worked solutions, including evaluation pipeline design, agent memory, and inference batching. The closest simulation of a real loop. |
 | [05-behavioral-for-ai-roles.md](05-behavioral-for-ai-roles.md) | Behavioral prep for AI-specific scenarios with six worked STAR-L examples, compensation and leveling questions, and an out-loud practice guide. |
-| [06-job-market-trends-2026.md](06-job-market-trends-2026.md) | Role taxonomy, comp ranges, interview process patterns, and emerging titles (FDE, AI Eval Engineer, AI Reliability Engineer, MCP Engineer). |
+| [06-job-market-trends-2026.md](06-job-market-trends-2026.md) | Role taxonomy, comp ranges (with re-swept levels.fyi rows marked), entry-level and layoff data, per-company AI-in-interview policies, and emerging titles (FDE, AI Eval Engineer, AI Reliability Engineer, MCP Engineer). |
 | [07-faq.md](07-faq.md) | Short, direct answers to the most-asked questions about AI engineering, RAG, agents, models, eval, inference, memory, and security. Useful for quick reference and for newcomers to the field. |
 
 ## Practice With a Real Interviewer
@@ -80,5 +84,5 @@ If you want those reps, Om offers 1:1 mock AI system design interviews, reviews 
 - The files are designed to be read in order; jumping straight to questions without absorbing answer frameworks leaves answers unstructured.
 - Whiteboard exercises (file 04) are the closest simulation to real interviews; do at least three before any loop.
 - Behavioral prep (file 05) is what separates staff candidates from senior candidates; do not skip it.
-- The August 2026 job market chapter (file 06) is a moat: candidates who know the hiring landscape can ask better questions and tailor stories.
+- The October 2026 job market chapter (file 06) is a moat: candidates who know the hiring landscape can ask better questions and tailor stories.
 - Recheck this folder monthly; new question batches are added as hiring trends shift.
