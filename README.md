@@ -3,9 +3,11 @@
 
 <p align="center">
   <a href="https://www.aidaddy.tech"><img src="https://img.shields.io/badge/Read%20it%20online%20%E2%86%92-7C3AED?style=for-the-badge&logo=bookstack&logoColor=white" alt="Read the guide online at aidaddy.tech"></a>
+  <a href="https://enginebogie.com/u/om"><img src="https://img.shields.io/badge/Book%20a%20mock%20interview%20%E2%86%92-0E7C66?style=for-the-badge&logo=googlecalendar&logoColor=white" alt="Book a 1:1 mock interview on EngineBogie"></a>
+  <a href="https://topmate.io/ombharatiya"><img src="https://img.shields.io/badge/Mentorship%20on%20Topmate-1F2937?style=for-the-badge&logoColor=white" alt="Book mentorship on Topmate"></a>
 </p>
 <p align="center">
-  <sub>🌐 Instant search, linked chapters, and a cleaner reader at <b><a href="https://www.aidaddy.tech">aidaddy.tech</a></b>. ⭐ Star the repo to support the work.</sub>
+  <sub>🌐 Instant search at <b><a href="https://www.aidaddy.tech">aidaddy.tech</a></b>. 🎯 1:1 mock interviews and mentorship with Om. ⭐ Star the repo to support the work.</sub>
 </p>
 
 <p align="center">
