@@ -240,7 +240,7 @@ second. Anything else you'd like me to go deeper on?"
 - Evaluation was part of the design, not an afterthought.
 
 
-To rehearse this under real conditions, run the same prompt with a partner who plays the interviewer and is allowed to interrupt. If you want an experienced interviewer for that, Om runs 1:1 mock sessions on [EngineBogie](https://enginebogie.com/u/om) and [Topmate](https://topmate.io/ombharatiya).
+To rehearse this under real conditions, run the same prompt with a partner who plays the interviewer and is allowed to interrupt. If you want an experienced interviewer for that, Om runs 1:1 mock sessions on [EngineBogie](https://enginebogie.com/u/ombharatiya) and [Topmate](https://topmate.io/ombharatiya).
 
 ---
 

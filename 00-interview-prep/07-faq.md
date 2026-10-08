@@ -39,7 +39,7 @@ For experienced engineers, yes: demand is strong and pay tracks senior software 
 
 ### Where can I get a mock AI system design interview or mentorship?
 
-Practice with a person, not only with a page. A mock interview surfaces the problems self-study hides: running out of time before evaluation, not stating tradeoffs, and freezing when the interviewer changes a constraint. Om, who maintains this guide, runs 1:1 mock AI system design interviews, answer and resume reviews, and ongoing mentorship for engineers moving into senior AI roles. Book on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya). Peers work too: trade mocks with someone preparing for a similar loop and use the [Answer Frameworks](02-answer-frameworks.md) as the scoring rubric.
+Practice with a person, not only with a page. A mock interview surfaces the problems self-study hides: running out of time before evaluation, not stating tradeoffs, and freezing when the interviewer changes a constraint. Om, who maintains this guide, runs 1:1 mock AI system design interviews, answer and resume reviews, and ongoing mentorship for engineers moving into senior AI roles. Book on [EngineBogie](https://enginebogie.com/u/ombharatiya) or [Topmate](https://topmate.io/ombharatiya). Peers work too: trade mocks with someone preparing for a similar loop and use the [Answer Frameworks](02-answer-frameworks.md) as the scoring rubric.
 
 ---
 
