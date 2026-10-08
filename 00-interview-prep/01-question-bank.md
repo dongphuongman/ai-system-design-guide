@@ -4,7 +4,7 @@ A topic-organized bank of 147 AI system design interview questions (Q1-Q147, con
 
 This chapter provides a comprehensive collection of interview questions organized by topic. Each question includes the depth of answer expected and key points that strong candidates cover. Pair this with the [Answer Frameworks](02-answer-frameworks.md) (the meta-skill that turns memorized answers into fluent ones), the [FAQ](07-faq.md) (short answers to the most-asked AI engineering questions), and the [Job Market Trends](06-job-market-trends-2026.md) (the hiring context that shapes what gets asked right now).
 
-> **Practice tip:** read a question, close the page, and answer it out loud against a timer before reading the model answer. For a full mock loop with live pushback and written feedback, book a session with Om on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya).
+> **Practice tip:** read a question, close the page, and answer it out loud against a timer before reading the model answer. For a full mock loop with live pushback and written feedback, book a session with Om on [EngineBogie](https://enginebogie.com/u/ombharatiya) or [Topmate](https://topmate.io/ombharatiya).
 
 ## Coverage at a Glance
 

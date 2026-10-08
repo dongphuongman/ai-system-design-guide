@@ -1296,7 +1296,7 @@ TTFT and inter-token latency at p50 and p99, queue wait, batch occupancy, KV uti
 
 ### Rehearse With Someone Else Drawing the Clock
 
-Solo practice catches knowledge gaps; it does not catch pacing, rambling, or the habit of defending a choice instead of weighing it. Run at least one exercise end to end with another person playing the interviewer. If you want an experienced interviewer and written feedback, book a 1:1 mock with Om on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya).
+Solo practice catches knowledge gaps; it does not catch pacing, rambling, or the habit of defending a choice instead of weighing it. Run at least one exercise end to end with another person playing the interviewer. If you want an experienced interviewer and written feedback, book a 1:1 mock with Om on [EngineBogie](https://enginebogie.com/u/ombharatiya) or [Topmate](https://topmate.io/ombharatiya).
 
 ---
 

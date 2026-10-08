@@ -70,7 +70,7 @@ mindmap
 
 Everything in this folder can be self-studied, but one part of the loop cannot: defending a design out loud while an interviewer interrupts, changes a constraint, and asks why you did not pick the other option. That is a skill, and it improves fastest with reps and direct feedback.
 
-If you want those reps, Om offers 1:1 mock AI system design interviews, reviews of your written answers and stories, and ongoing mentorship for engineers moving into senior or staff AI roles. Book on [EngineBogie](https://enginebogie.com/u/om) or [Topmate](https://topmate.io/ombharatiya). A good time to book is after you have worked through the answer frameworks and at least three whiteboard exercises, so the session tests your delivery rather than your reading.
+If you want those reps, Om offers 1:1 mock AI system design interviews, reviews of your written answers and stories, and ongoing mentorship for engineers moving into senior or staff AI roles. Book on [EngineBogie](https://enginebogie.com/u/ombharatiya) or [Topmate](https://topmate.io/ombharatiya). A good time to book is after you have worked through the answer frameworks and at least three whiteboard exercises, so the session tests your delivery rather than your reading.
 
 ## Companion Resources
 
